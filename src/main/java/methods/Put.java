@@ -2,7 +2,7 @@ package methods;
 
 import com.jayway.restassured.response.Response;
 
-public interface Put {
+interface Put {
 
     <T> Response put(String url, T data, int statusCode, String token);
 

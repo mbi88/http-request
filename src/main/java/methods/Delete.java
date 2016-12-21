@@ -2,7 +2,7 @@ package methods;
 
 import com.jayway.restassured.response.Response;
 
-public interface Delete {
+interface Delete {
 
     <T> Response delete(String url, T data, int statusCode, String token);
 

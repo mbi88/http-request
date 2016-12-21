@@ -2,7 +2,7 @@ package methods;
 
 import com.jayway.restassured.response.Response;
 
-public interface Patch {
+interface Patch {
 
     <T> Response patch(String url, T data, int statusCode, String token);
 

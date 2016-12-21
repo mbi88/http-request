@@ -3,7 +3,7 @@ package request;
 import com.jayway.restassured.response.Response;
 import methods.Method;
 
-public interface Request extends Method {
+interface Request extends Method {
 
     default void checkStatus(Response r, int statusCode) {
         try {

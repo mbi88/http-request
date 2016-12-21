@@ -2,7 +2,7 @@ package methods;
 
 import com.jayway.restassured.response.Response;
 
-public interface Get {
+interface Get {
 
     Response get(String url, int statusCode, String token);
 

@@ -1,20 +1,12 @@
 package request;
 
-import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
-import static com.jayway.restassured.RestAssured.given;
-
-public class HttpRequest implements Request {
+public class HttpRequest extends Specification implements Request {
 
     @Override
     public Response get(String url, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .when()
-                .get(url);
-
+        Response r = getSpecification(token).get(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -22,20 +14,12 @@ public class HttpRequest implements Request {
 
     @Override
     public Response get(String url, String token) {
-        return given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .when()
-                .get(url);
+        return getSpecification(token).get(url);
     }
 
     @Override
     public Response get(String url, int statusCode) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(url);
-
+        Response r = getSpecification().get(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -43,13 +27,7 @@ public class HttpRequest implements Request {
 
     @Override
     public <T> Response post(String url, T data, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .body(data.toString())
-                .when()
-                .post(url);
-
+        Response r = getSpecification(data, token).post(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -57,22 +35,12 @@ public class HttpRequest implements Request {
 
     @Override
     public <T> Response post(String url, T data, String token) {
-        return given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .body(data.toString())
-                .when()
-                .post(url);
+        return getSpecification(data, token).post(url);
     }
 
     @Override
     public <T> Response post(String url, T data, int statusCode) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .body(data.toString())
-                .when()
-                .post(url);
-
+        Response r = getSpecification(data).post(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -80,12 +48,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Response post(String url, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .when()
-                .post(url);
-
+        Response r = getSpecification(token).post(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -93,13 +56,7 @@ public class HttpRequest implements Request {
 
     @Override
     public <T> Response put(String url, T data, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .body(data.toString())
-                .when()
-                .put(url);
-
+        Response r = getSpecification(data, token).put(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -107,22 +64,12 @@ public class HttpRequest implements Request {
 
     @Override
     public <T> Response put(String url, T data, String token) {
-        return given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .body(data.toString())
-                .when()
-                .put(url);
+        return getSpecification(data, token).put(url);
     }
 
     @Override
     public <T> Response put(String url, T data, int statusCode) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .body(data.toString())
-                .when()
-                .put(url);
-
+        Response r = getSpecification(data).put(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -130,12 +77,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Response put(String url, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .when()
-                .put(url);
-
+        Response r = getSpecification(token).put(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -143,13 +85,7 @@ public class HttpRequest implements Request {
 
     @Override
     public <T> Response patch(String url, T data, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .body(data.toString())
-                .when()
-                .patch(url);
-
+        Response r = getSpecification(data, token).patch(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -157,22 +93,12 @@ public class HttpRequest implements Request {
 
     @Override
     public <T> Response patch(String url, T data, String token) {
-        return given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .body(data.toString())
-                .when()
-                .patch(url);
+        return getSpecification(data, token).patch(url);
     }
 
     @Override
     public <T> Response patch(String url, T data, int statusCode) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .body(data.toString())
-                .when()
-                .patch(url);
-
+        Response r = getSpecification(data).patch(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -180,12 +106,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Response patch(String url, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .when()
-                .patch(url);
-
+        Response r = getSpecification(token).patch(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -193,13 +114,7 @@ public class HttpRequest implements Request {
 
     @Override
     public <T> Response delete(String url, T data, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .body(data.toString())
-                .when()
-                .delete(url);
-
+        Response r = getSpecification(data, token).delete(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -207,12 +122,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Response delete(String url, int statusCode, String token) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .when()
-                .delete(url);
-
+        Response r = getSpecification(token).delete(url);
         checkStatus(r, statusCode);
 
         return r;
@@ -220,20 +130,12 @@ public class HttpRequest implements Request {
 
     @Override
     public Response delete(String url, String token) {
-        return given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", token)
-                .when()
-                .delete(url);
+        return getSpecification(token).delete(url);
     }
 
     @Override
     public Response delete(String url, int statusCode) {
-        Response r = given()
-                .contentType(ContentType.JSON)
-                .when()
-                .delete(url);
-
+        Response r = getSpecification().delete(url);
         checkStatus(r, statusCode);
 
         return r;
