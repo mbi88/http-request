@@ -7,31 +7,30 @@ import static com.jayway.restassured.RestAssured.given;
 
 class Specification {
 
+    private RequestSpecification getRequestSpecification() {
+        return given().contentType(ContentType.JSON);
+    }
+
     <T> RequestSpecification getSpecification(T data, String token) {
-        return given()
-                .contentType(ContentType.JSON)
+        return getRequestSpecification()
                 .body(data.toString())
                 .header("Authorization", token)
                 .when();
     }
 
     RequestSpecification getSpecification(String token) {
-        return given()
-                .contentType(ContentType.JSON)
+        return getRequestSpecification()
                 .header("Authorization", token)
                 .when();
     }
 
     <T> RequestSpecification getSpecification(T data) {
-        return given()
-                .contentType(ContentType.JSON)
+        return getRequestSpecification()
                 .body(data.toString())
                 .when();
     }
 
     RequestSpecification getSpecification() {
-        return given()
-                .contentType(ContentType.JSON)
-                .when();
+        return getRequestSpecification().when();
     }
 }
