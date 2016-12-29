@@ -1,7 +1,7 @@
-package request;
+package com.mbi.request;
 
 import com.jayway.restassured.response.Response;
-import methods.Method;
+import com.mbi.methods.Method;
 
 interface Request extends Method {
 

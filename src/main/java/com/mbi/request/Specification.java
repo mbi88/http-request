@@ -1,4 +1,4 @@
-package request;
+package com.mbi.request;
 
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.specification.RequestSpecification;

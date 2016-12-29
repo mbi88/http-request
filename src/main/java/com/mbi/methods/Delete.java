@@ -1,4 +1,4 @@
-package methods;
+package com.mbi.methods;
 
 import com.jayway.restassured.response.Response;
 
@@ -11,4 +11,6 @@ interface Delete {
     Response delete(String path, String token);
 
     Response delete(String path, int statusCode);
+
+    <T> Response delete(String path, T data, int statusCode);
 }

@@ -1,4 +1,4 @@
-package request;
+package com.mbi.request;
 
 import com.jayway.restassured.response.Response;
 
@@ -136,6 +136,14 @@ public class HttpRequest extends Specification implements Request {
     @Override
     public Response delete(String path, int statusCode) {
         Response r = getSpecification().delete(path);
+        checkStatus(r, statusCode);
+
+        return r;
+    }
+
+    @Override
+    public <T> Response delete(String path, T data, int statusCode) {
+        Response r = getSpecification(data).delete(path);
         checkStatus(r, statusCode);
 
         return r;

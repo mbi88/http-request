@@ -1,4 +1,4 @@
-package methods;
+package com.mbi.methods;
 
 import com.jayway.restassured.response.Response;
 
