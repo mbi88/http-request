@@ -55,6 +55,14 @@ public class HttpRequest extends Specification implements Request {
     }
 
     @Override
+    public Response post(String path, int statusCode) {
+        Response r = getSpecification().post(path);
+        checkStatus(r, statusCode);
+
+        return r;
+    }
+
+    @Override
     public <T> Response put(String path, T data, int statusCode, String token) {
         Response r = getSpecification(data, token).put(path);
         checkStatus(r, statusCode);

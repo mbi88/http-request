@@ -11,4 +11,6 @@ interface Post {
     <T> Response post(String path, T data, int statusCode);
 
     Response post(String path, int statusCode, String token);
+
+    Response post(String path, int statusCode);
 }
