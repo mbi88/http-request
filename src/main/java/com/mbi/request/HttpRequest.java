@@ -1,6 +1,7 @@
 package com.mbi.request;
 
 import com.jayway.restassured.response.Response;
+import com.jayway.restassured.specification.RequestSpecification;
 
 // TODO: 3/2/17 need refactoring with usage builder pattern
 public class HttpRequest implements Request, Configurator {
@@ -61,6 +62,11 @@ public class HttpRequest implements Request, Configurator {
         checkStatus(r, statusCode);
 
         return r;
+    }
+
+    @Override
+    public <T> Response post(String path, T data, RequestSpecification specification) {
+        Response r = configureRequest(path).post(path);
     }
 
     @Override

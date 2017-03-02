@@ -68,4 +68,11 @@ interface Configurator {
                 .body(data.toString())
                 .when();
     }
+
+    default <T> RequestSpecification configureRequest(String path, T data, RequestSpecification specification) {
+        return defaultSpecification(path)
+                .specification(specification)
+                .body(data.toString())
+                .when();
+    }
 }
