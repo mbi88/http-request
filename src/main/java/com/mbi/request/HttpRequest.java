@@ -66,7 +66,7 @@ public class HttpRequest implements Request, Configurator {
 
     @Override
     public <T> Response post(String path, T data, RequestSpecification specification) {
-        Response r = configureRequest(path).post(path);
+        return configureRequest(path).post(path);
     }
 
     @Override
