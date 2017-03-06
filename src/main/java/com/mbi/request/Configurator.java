@@ -37,13 +37,17 @@ interface Configurator {
     }
 
     static String resolvePath(String path) {
-        return path.replaceFirst("^http(s)?://(www.)?", "").split("/")[0];
+        return path.replaceFirst("^https://(www.)?", "").split("/")[0];
     }
 
     static RequestSpecification defaultSpecification(String path) {
-        return given()
-                .contentType(ContentType.JSON)
-                .config(getConfig(resolvePath(path)));
+        RequestSpecification specification = given()
+                .contentType(ContentType.JSON);
+
+        if (path.startsWith("https"))
+            specification.config(getConfig(resolvePath(path)));
+
+        return specification;
     }
 
     default RequestSpecification configureRequest(String path) {
