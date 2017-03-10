@@ -49,6 +49,11 @@ public class HttpRequest implements Request, Configurator {
     }
 
     @Override
+    public <T> Response post(String path, T data) {
+        return configureRequest(path, data).post(path);
+    }
+
+    @Override
     public Response post(String path, int statusCode, String token) {
         Response r = configureRequest(path, token).post(path);
         checkStatus(r, statusCode);
