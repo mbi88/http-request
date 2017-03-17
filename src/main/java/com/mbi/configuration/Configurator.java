@@ -1,4 +1,4 @@
-package com.mbi.request;
+package com.mbi.configuration;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.config.RestAssuredConfig;
@@ -6,6 +6,7 @@ import com.jayway.restassured.config.SSLConfig;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.specification.RequestSpecification;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import com.mbi.Parameters;
 
 import javax.net.ssl.SSLContext;
 import java.security.NoSuchAlgorithmException;
@@ -13,9 +14,9 @@ import java.security.NoSuchAlgorithmException;
 import static com.jayway.restassured.RestAssured.given;
 import static org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
-interface Configurator {
+public class Configurator {
 
-    static RestAssuredConfig getConfig(String domain) {
+    private RestAssuredConfig getConfig(String domain) {
         SSLSocketFactory customSslFactory = null;
         try {
             customSslFactory = new GatewaySslSocketFactory(domain,
@@ -36,11 +37,11 @@ interface Configurator {
         return restAssuredConfig;
     }
 
-    static String resolvePath(String path) {
+    private String resolvePath(String path) {
         return path.replaceFirst("^https://(www.)?", "").split("/")[0];
     }
 
-    static RequestSpecification defaultSpecification(String path) {
+    private RequestSpecification defaultSpecification(String path) {
         RequestSpecification specification = given()
                 .contentType(ContentType.JSON);
 
@@ -50,33 +51,20 @@ interface Configurator {
         return specification;
     }
 
-    default RequestSpecification configureRequest(String path) {
-        return defaultSpecification(path).when();
-    }
+    public RequestSpecification configureRequest(Parameters requestParameters) {
+        RequestSpecification spec = defaultSpecification(requestParameters.getPath());
 
-    default <T> RequestSpecification configureRequest(String path, T data, String token) {
-        return defaultSpecification(path)
-                .body(data.toString())
-                .header("Authorization", token)
-                .when();
-    }
+        if (requestParameters.getSpecification() != null)
+            spec.specification(requestParameters.getSpecification());
 
-    default RequestSpecification configureRequest(String path, String token) {
-        return defaultSpecification(path)
-                .header("Authorization", token)
-                .when();
-    }
+        if (requestParameters.getToken() != null) {
+            spec.header("Authorization", requestParameters.getToken());
+        }
 
-    default <T> RequestSpecification configureRequest(String path, T data) {
-        return defaultSpecification(path)
-                .body(data.toString())
-                .when();
-    }
+        if (requestParameters.getData() != null) {
+            spec.body(requestParameters.getData().toString());
+        }
 
-    default <T> RequestSpecification configureRequest(String path, T data, RequestSpecification specification) {
-        return defaultSpecification(path)
-                .specification(specification)
-                .body(data.toString())
-                .when();
+        return spec;
     }
 }

@@ -1,4 +1,4 @@
-package com.mbi.request;
+package com.mbi.configuration;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
