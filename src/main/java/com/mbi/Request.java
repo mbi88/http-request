@@ -8,7 +8,7 @@ public class Request {
     private final Parameters parameters;
     private final HttpMethod method;
 
-    public Request(Builder builder) {
+    Request(Builder builder) {
         this.parameters = builder.getParameters();
         this.method = builder.getMethod();
     }
