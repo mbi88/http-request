@@ -13,12 +13,15 @@ public interface HttpMethod {
     }
 
     default void checkStatusCode(Response r, Parameters requestParameters) {
-        if (requestParameters.getStatusCode() != 0)
-            try {
-                r.then().assertThat().statusCode(requestParameters.getStatusCode());
-            } catch (AssertionError ae) {
-                throw new AssertionError(ae.getMessage().concat("\n").concat(r.asString()));
-            }
+        // No need to check status code if it's not set
+        if (requestParameters.getStatusCode() == 0)
+            return;
+
+        try {
+            r.then().assertThat().statusCode(requestParameters.getStatusCode());
+        } catch (AssertionError ae) {
+            throw new AssertionError(ae.getMessage().concat("\n").concat(r.asString()));
+        }
     }
 
     Response request(Request request);
