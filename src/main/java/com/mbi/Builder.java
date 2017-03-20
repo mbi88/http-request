@@ -51,7 +51,13 @@ class Builder {
     }
 
     void buildParameters() {
-        this.parameters = new Parameters(path, data, statusCode, token, specification);
+        this.parameters = new Parameters().newBuilder()
+                .setPath(path)
+                .setData(data)
+                .setStatusCode(statusCode)
+                .setToken(token)
+                .setSpecification(specification)
+                .build();
     }
 
     Request build() {

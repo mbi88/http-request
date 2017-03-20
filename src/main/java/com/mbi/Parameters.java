@@ -3,18 +3,17 @@ package com.mbi;
 import com.jayway.restassured.specification.RequestSpecification;
 
 public class Parameters {
-    private final String path;
-    private final Object data;
-    private final int statusCode;
-    private final String token;
-    private final RequestSpecification specification;
+    private String path;
+    private Object data;
+    private int statusCode;
+    private String token;
+    private RequestSpecification specification;
 
-    public Parameters(String path, Object data, int statusCode, String token, RequestSpecification specification) {
-        this.path = path;
-        this.data = data;
-        this.statusCode = statusCode;
-        this.token = token;
-        this.specification = specification;
+    Parameters() {
+    }
+
+    ParametersBuilder newBuilder() {
+        return this.new ParametersBuilder();
     }
 
     public String getPath() {
@@ -35,5 +34,40 @@ public class Parameters {
 
     public RequestSpecification getSpecification() {
         return specification;
+    }
+
+    class ParametersBuilder {
+
+        private ParametersBuilder() {
+        }
+
+        ParametersBuilder setPath(String path) {
+            Parameters.this.path = path;
+            return this;
+        }
+
+        ParametersBuilder setData(Object data) {
+            Parameters.this.data = data;
+            return this;
+        }
+
+        ParametersBuilder setStatusCode(int code) {
+            Parameters.this.statusCode = code;
+            return this;
+        }
+
+        ParametersBuilder setToken(String token) {
+            Parameters.this.token = token;
+            return this;
+        }
+
+        ParametersBuilder setSpecification(RequestSpecification specification) {
+            Parameters.this.specification = specification;
+            return this;
+        }
+
+        Parameters build() {
+            return Parameters.this;
+        }
     }
 }

@@ -1,6 +1,7 @@
 # http-request
 
-Usage:
+**Usage:**
 
 HttpRequest http = new HttpRequest();
-http.get("URL", 200);
+
+http.get("<URL><http://your.url>", 200);
