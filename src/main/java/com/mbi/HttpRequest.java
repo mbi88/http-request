@@ -99,7 +99,7 @@ public class HttpRequest implements Method {
     @Override
     public <T> Response patch(String path, T data, String token) {
         Builder builder = new Builder()
-                .setMethod(new PutHttpMethod())
+                .setMethod(new PatchHttpMethod())
                 .setPath(path)
                 .setData(data)
                 .setToken(token);
@@ -110,7 +110,7 @@ public class HttpRequest implements Method {
     @Override
     public <T> Response patch(String path, T data, int statusCode) {
         Builder builder = new Builder()
-                .setMethod(new PutHttpMethod())
+                .setMethod(new PatchHttpMethod())
                 .setPath(path)
                 .setData(data)
                 .setStatusCode(statusCode);
@@ -121,7 +121,7 @@ public class HttpRequest implements Method {
     @Override
     public Response patch(String path, int statusCode, String token) {
         Builder builder = new Builder()
-                .setMethod(new PutHttpMethod())
+                .setMethod(new PatchHttpMethod())
                 .setPath(path)
                 .setStatusCode(statusCode)
                 .setToken(token);
