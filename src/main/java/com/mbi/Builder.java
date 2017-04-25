@@ -1,7 +1,7 @@
 package com.mbi;
 
-import com.jayway.restassured.specification.RequestSpecification;
 import com.mbi.http.HttpMethod;
+import io.restassured.specification.RequestSpecification;
 
 class Builder {
     private String path;

@@ -1,6 +1,6 @@
 package com.mbi.http;
 
-import com.jayway.restassured.response.Response;
+import io.restassured.response.Response;
 import com.mbi.Parameters;
 import com.mbi.Request;
 

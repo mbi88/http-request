@@ -1,10 +1,11 @@
 package com.mbi.http;
 
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
+
 import com.mbi.Parameters;
 import com.mbi.Request;
 import com.mbi.configuration.Configurator;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 public interface HttpMethod {
 

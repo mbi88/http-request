@@ -1,6 +1,6 @@
 package com.mbi;
 
-import com.jayway.restassured.specification.RequestSpecification;
+import io.restassured.specification.RequestSpecification;
 
 public class Parameters {
     private String path;

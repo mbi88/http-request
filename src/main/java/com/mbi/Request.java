@@ -1,7 +1,7 @@
 package com.mbi;
 
-import com.jayway.restassured.response.Response;
 import com.mbi.http.HttpMethod;
+import io.restassured.response.Response;
 
 public class Request {
 

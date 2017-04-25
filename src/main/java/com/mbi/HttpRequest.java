@@ -1,9 +1,9 @@
 package com.mbi;
 
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
 import com.mbi.http.*;
 import com.mbi.methods.Method;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 
 public class HttpRequest implements Method {

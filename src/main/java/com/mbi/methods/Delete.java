@@ -1,6 +1,6 @@
 package com.mbi.methods;
 
-import com.jayway.restassured.response.Response;
+import io.restassured.response.Response;
 
 interface Delete {
 
