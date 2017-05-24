@@ -21,7 +21,11 @@ public interface HttpMethod {
         try {
             r.then().assertThat().statusCode(requestParameters.getStatusCode());
         } catch (AssertionError ae) {
-            throw new AssertionError(ae.getMessage().concat("\n").concat(r.asString()));
+            throw new AssertionError(ae.getMessage()
+                    .concat("\n")
+                    .concat("Path: " + requestParameters.getPath())
+                    .concat("\n\n")
+                    .concat("Response: " + r.asString()));
         }
     }
 
