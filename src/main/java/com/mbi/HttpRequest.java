@@ -1,261 +1,34 @@
 package com.mbi;
 
-import com.mbi.http.*;
-import com.mbi.methods.Method;
+import io.restassured.http.Header;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
+import java.util.List;
 
-public class HttpRequest implements Method {
+public interface HttpRequest {
 
-    @Override
-    public Response get(String path, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new GetHttpMethod())
-                .setPath(path)
-                .setToken(token)
-                .setStatusCode(statusCode);
+    HttpRequest setHeader(String header, String value);
 
-        return new Director(builder).construct().request();
-    }
+    HttpRequest setHeader(List<Header> header);
 
-    @Override
-    public Response get(String path, String token) {
-        Builder builder = new Builder()
-                .setMethod(new GetHttpMethod())
-                .setPath(path)
-                .setToken(token);
+    HttpRequest setData(Object data);
 
-        return new Director(builder).construct().request();
-    }
+    HttpRequest setToken(String token);
 
-    @Override
-    public Response get(String path, int code) {
-        Builder builder = new Builder()
-                .setMethod(new GetHttpMethod())
-                .setPath(path)
-                .setStatusCode(code);
+    HttpRequest setExpectedStatusCode(int code);
 
-        return new Director(builder).construct().request();
-    }
+    HttpRequest setPath(String path);
 
-    @Override
-    public <T> Response put(String path, T data, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PutHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode)
-                .setToken(token);
+    HttpRequest setRequestSpecification(RequestSpecification specification);
 
-        return new Director(builder).construct().request();
-    }
+    Response post();
 
-    @Override
-    public <T> Response put(String path, T data, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PutHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setToken(token);
+    Response get();
 
-        return new Director(builder).construct().request();
-    }
+    Response put();
 
-    @Override
-    public <T> Response put(String path, T data, int statusCode) {
-        Builder builder = new Builder()
-                .setMethod(new PutHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode);
+    Response patch();
 
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public Response put(String path, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PutHttpMethod())
-                .setPath(path)
-                .setStatusCode(statusCode)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response patch(String path, T data, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PatchHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response patch(String path, T data, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PatchHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response patch(String path, T data, int statusCode) {
-        Builder builder = new Builder()
-                .setMethod(new PatchHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public Response patch(String path, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PatchHttpMethod())
-                .setPath(path)
-                .setStatusCode(statusCode)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response delete(String path, T data, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new DeleteHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public Response delete(String path, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new DeleteHttpMethod())
-                .setPath(path)
-                .setStatusCode(statusCode)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public Response delete(String path, String token) {
-        Builder builder = new Builder()
-                .setMethod(new DeleteHttpMethod())
-                .setPath(path)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public Response delete(String path, int statusCode) {
-        Builder builder = new Builder()
-                .setMethod(new DeleteHttpMethod())
-                .setPath(path)
-                .setStatusCode(statusCode);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response delete(String path, T data, int statusCode) {
-        Builder builder = new Builder()
-                .setMethod(new DeleteHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response post(String path, T data, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PostHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response post(String path, T data, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PostHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response post(String path, T data, int statusCode) {
-        Builder builder = new Builder()
-                .setMethod(new PostHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setStatusCode(statusCode);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response post(String path, T data) {
-        Builder builder = new Builder()
-                .setMethod(new PostHttpMethod())
-                .setPath(path)
-                .setData(data);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public Response post(String path, int statusCode, String token) {
-        Builder builder = new Builder()
-                .setMethod(new PostHttpMethod())
-                .setPath(path)
-                .setStatusCode(statusCode)
-                .setToken(token);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public Response post(String path, int statusCode) {
-        Builder builder = new Builder()
-                .setMethod(new PostHttpMethod())
-                .setPath(path)
-                .setStatusCode(statusCode);
-
-        return new Director(builder).construct().request();
-    }
-
-    @Override
-    public <T> Response post(String path, T data, RequestSpecification specification) {
-        Builder builder = new Builder()
-                .setMethod(new PostHttpMethod())
-                .setPath(path)
-                .setData(data)
-                .setSpecification(specification);
-
-        return new Director(builder).construct().request();
-    }
+    Response delete();
 }

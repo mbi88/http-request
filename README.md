@@ -2,6 +2,20 @@
 
 **Usage:**
 
-HttpRequest http = new HttpRequest();
+```java
+import com.mbi.HttpRequest;
+import org.testng.annotations.Test;
 
-http.get("<URL><http://your.url>", 200);
+class HttpRequestTest {
+
+    private HttpRequest request = new RequestBuilder();
+
+    @Test
+    public void test() {
+        request
+            .setExpectedStatusCode(200)
+            .setPath("https://google.com")
+            .get();
+    }
+}
+```
