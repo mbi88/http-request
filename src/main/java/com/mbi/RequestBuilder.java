@@ -47,8 +47,7 @@ public class RequestBuilder implements HttpRequest {
         return this;
     }
 
-    @Override
-    public HttpRequest setPath(String path) {
+    private HttpRequest setPath(String path) {
         this.path = path;
         return this;
     }
@@ -84,7 +83,8 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public Response post() {
+    public Response post(String path) {
+        setPath(path);
         PostHttpMethod httpMethod = new PostHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
@@ -92,7 +92,8 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public Response get() {
+    public Response get(String path) {
+        setPath(path);
         GetHttpMethod httpMethod = new GetHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
@@ -100,7 +101,8 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public Response put() {
+    public Response put(String path) {
+        setPath(path);
         PutHttpMethod httpMethod = new PutHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
@@ -108,7 +110,8 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public Response patch() {
+    public Response patch(String path) {
+        setPath(path);
         PatchHttpMethod httpMethod = new PatchHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
@@ -116,7 +119,8 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public Response delete() {
+    public Response delete(String path) {
+        setPath(path);
         DeleteHttpMethod httpMethod = new DeleteHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 

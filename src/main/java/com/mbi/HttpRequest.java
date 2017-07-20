@@ -18,17 +18,15 @@ public interface HttpRequest {
 
     HttpRequest setExpectedStatusCode(int code);
 
-    HttpRequest setPath(String path);
-
     HttpRequest setRequestSpecification(RequestSpecification specification);
 
-    Response post();
+    Response post(String path);
 
-    Response get();
+    Response get(String path);
 
-    Response put();
+    Response put(String path);
 
-    Response patch();
+    Response patch(String path);
 
-    Response delete();
+    Response delete(String path);
 }
