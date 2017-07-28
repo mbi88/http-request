@@ -10,7 +10,8 @@ public class Configurator {
 
     private RequestSpecification defaultSpecification() {
         return given()
-                .contentType(ContentType.JSON);
+                .contentType(ContentType.JSON)
+                .accept("application/json");
     }
 
     public RequestSpecification configureRequest(RequestBuilder builder) {
