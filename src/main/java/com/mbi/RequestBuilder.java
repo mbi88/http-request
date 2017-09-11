@@ -10,76 +10,85 @@ import java.util.List;
 
 public class RequestBuilder implements HttpRequest {
 
-    private String path;
-    private Object data;
-    private int statusCode;
-    private String token;
-    private List<Header> headers = new ArrayList<>();
-    private RequestSpecification specification;
+    private static final ThreadLocal<String> PATH_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<Object> DATA_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<Integer> STATUS_CODE_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<String> TOKEN_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<List<Header>> HEADERS_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<RequestSpecification> SPECIFICATION_THREAD_LOCAL = new ThreadLocal<>();
 
     @Override
     public HttpRequest setHeader(String header, String value) {
-        headers.add(new Header(header, value));
+        List<Header> list = new ArrayList<>();
+        list.add(new Header(header, value));
+        HEADERS_THREAD_LOCAL.set(list);
+
         return this;
     }
 
     @Override
     public HttpRequest setHeader(List<Header> header) {
-        headers = header;
+        HEADERS_THREAD_LOCAL.set(header);
+
         return this;
     }
 
     @Override
     public HttpRequest setData(Object data) {
-        this.data = data;
+        DATA_THREAD_LOCAL.set(data);
+
         return this;
     }
 
     @Override
     public HttpRequest setToken(String token) {
-        this.token = token;
+        TOKEN_THREAD_LOCAL.set(token);
+
         return this;
     }
 
     @Override
     public HttpRequest setExpectedStatusCode(int statusCode) {
-        this.statusCode = statusCode;
+        STATUS_CODE_THREAD_LOCAL.set(statusCode);
+
         return this;
     }
 
     private HttpRequest setPath(String path) {
-        this.path = path;
+        PATH_THREAD_LOCAL.set(path);
+
         return this;
     }
 
     @Override
     public HttpRequest setRequestSpecification(RequestSpecification specification) {
-        this.specification = specification;
+        SPECIFICATION_THREAD_LOCAL.set(specification);
+
         return this;
     }
 
     public String getPath() {
-        return path;
+        return PATH_THREAD_LOCAL.get();
     }
 
     public Object getData() {
-        return data;
+        return DATA_THREAD_LOCAL.get();
     }
 
     public int getStatusCode() {
-        return statusCode;
+        return STATUS_CODE_THREAD_LOCAL.get();
     }
 
     public String getToken() {
-        return token;
+        return TOKEN_THREAD_LOCAL.get();
     }
 
     public List<Header> getHeaders() {
-        return headers;
+        return HEADERS_THREAD_LOCAL.get();
     }
 
     public RequestSpecification getSpecification() {
-        return specification;
+        return SPECIFICATION_THREAD_LOCAL.get();
     }
 
     @Override
