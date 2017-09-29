@@ -100,6 +100,10 @@ public class RequestBuilder implements HttpRequest {
         return SPECIFICATION_THREAD_LOCAL.get();
     }
 
+    public String getMethod() {
+        return METHOD_THREAD_LOCAL.get();
+    }
+
     @Override
     public Response post(String path) {
         setPath(path);
