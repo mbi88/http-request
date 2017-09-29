@@ -22,7 +22,7 @@ public interface HttpRequest {
 
     HttpRequest setPath(String path);
 
-    HttpRequest sesMethod(String method);
+    HttpRequest setMethod(String method);
 
     Response post(String path);
 
