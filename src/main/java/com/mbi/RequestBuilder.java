@@ -63,7 +63,7 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public HttpRequest sesMethod(String method) {
+    public HttpRequest setMethod(String method) {
         METHOD_THREAD_LOCAL.set(method);
 
         return this;
