@@ -11,6 +11,7 @@ import java.util.List;
 public class RequestBuilder implements HttpRequest {
 
     private static final ThreadLocal<String> PATH_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<String> METHOD_THREAD_LOCAL = new ThreadLocal<>();
     private static final ThreadLocal<Object> DATA_THREAD_LOCAL = new ThreadLocal<>();
     private static final ThreadLocal<Integer> STATUS_CODE_THREAD_LOCAL = new ThreadLocal<>();
     private static final ThreadLocal<String> TOKEN_THREAD_LOCAL = new ThreadLocal<>();
@@ -54,8 +55,16 @@ public class RequestBuilder implements HttpRequest {
         return this;
     }
 
-    private HttpRequest setPath(String path) {
+    @Override
+    public HttpRequest setPath(String path) {
         PATH_THREAD_LOCAL.set(path);
+
+        return this;
+    }
+
+    @Override
+    public HttpRequest sesMethod(String method) {
+        METHOD_THREAD_LOCAL.set(method);
 
         return this;
     }

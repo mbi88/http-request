@@ -20,6 +20,10 @@ public interface HttpRequest {
 
     HttpRequest setRequestSpecification(RequestSpecification specification);
 
+    HttpRequest setPath(String path);
+
+    HttpRequest sesMethod(String method);
+
     Response post(String path);
 
     Response get(String path);
