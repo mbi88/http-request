@@ -49,7 +49,7 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public HttpRequest setExpectedStatusCode(int statusCode) {
+    public HttpRequest setExpectedStatusCode(Integer statusCode) {
         STATUS_CODE_THREAD_LOCAL.set(statusCode);
 
         return this;
@@ -84,7 +84,7 @@ public class RequestBuilder implements HttpRequest {
         return DATA_THREAD_LOCAL.get();
     }
 
-    public int getStatusCode() {
+    public Integer getStatusCode() {
         return STATUS_CODE_THREAD_LOCAL.get();
     }
 
@@ -155,7 +155,7 @@ public class RequestBuilder implements HttpRequest {
     private void resetBuilder() {
         setPath(null);
         setData(null);
-        setExpectedStatusCode(0);
+        setExpectedStatusCode(null);
         setToken(null);
         setHeader(new ArrayList<>());
         setRequestSpecification(null);

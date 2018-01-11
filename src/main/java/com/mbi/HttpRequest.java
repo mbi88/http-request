@@ -16,7 +16,7 @@ public interface HttpRequest {
 
     HttpRequest setToken(String token);
 
-    HttpRequest setExpectedStatusCode(int code);
+    HttpRequest setExpectedStatusCode(Integer code);
 
     HttpRequest setRequestSpecification(RequestSpecification specification);
 
