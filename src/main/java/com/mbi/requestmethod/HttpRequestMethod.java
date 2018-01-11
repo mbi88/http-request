@@ -6,6 +6,8 @@ import com.mbi.RequestBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
+import java.util.Objects;
+
 public interface HttpRequestMethod {
 
     default RequestSpecification getSpecification(RequestBuilder builder) {
@@ -14,7 +16,7 @@ public interface HttpRequestMethod {
 
     default void checkStatusCode(Response r, RequestBuilder builder) {
         // No need to check status code if it's not set
-        if (builder.getStatusCode() == 0)
+        if (Objects.isNull(builder.getStatusCode()))
             return;
 
         try {
