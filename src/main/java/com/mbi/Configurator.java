@@ -6,6 +6,9 @@ import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
 
+/**
+ *
+ */
 public class Configurator {
 
     private RequestSpecification defaultSpecification() {
@@ -14,11 +17,12 @@ public class Configurator {
                 .accept("application/json");
     }
 
-    public RequestSpecification configureRequest(RequestBuilder builder) {
-        RequestSpecification spec = defaultSpecification();
+    public RequestSpecification configureRequest(final RequestBuilder builder) {
+        final RequestSpecification spec = defaultSpecification();
 
-        if (builder.getSpecification() != null)
+        if (builder.getSpecification() != null) {
             spec.spec(builder.getSpecification());
+        }
 
         if (builder.getToken() != null) {
             spec.header("Authorization", builder.getToken());

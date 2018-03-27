@@ -8,6 +8,9 @@ import io.restassured.specification.RequestSpecification;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ */
 public class RequestBuilder implements HttpRequest {
 
     private static final ThreadLocal<String> PATH_THREAD_LOCAL = new ThreadLocal<>();
@@ -19,8 +22,8 @@ public class RequestBuilder implements HttpRequest {
     private static final ThreadLocal<RequestSpecification> SPECIFICATION_THREAD_LOCAL = new ThreadLocal<>();
 
     @Override
-    public HttpRequest setHeader(String header, String value) {
-        List<Header> list = new ArrayList<>();
+    public HttpRequest setHeader(final String header, final String value) {
+        final List<Header> list = new ArrayList<>();
         list.add(new Header(header, value));
         HEADERS_THREAD_LOCAL.set(list);
 
@@ -28,49 +31,49 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public HttpRequest setHeader(List<Header> header) {
+    public HttpRequest setHeader(final List<Header> header) {
         HEADERS_THREAD_LOCAL.set(header);
 
         return this;
     }
 
     @Override
-    public HttpRequest setData(Object data) {
+    public HttpRequest setData(final Object data) {
         DATA_THREAD_LOCAL.set(data);
 
         return this;
     }
 
     @Override
-    public HttpRequest setToken(String token) {
+    public HttpRequest setToken(final String token) {
         TOKEN_THREAD_LOCAL.set(token);
 
         return this;
     }
 
     @Override
-    public HttpRequest setExpectedStatusCode(Integer statusCode) {
+    public HttpRequest setExpectedStatusCode(final Integer statusCode) {
         STATUS_CODE_THREAD_LOCAL.set(statusCode);
 
         return this;
     }
 
     @Override
-    public HttpRequest setPath(String path) {
+    public HttpRequest setPath(final String path) {
         PATH_THREAD_LOCAL.set(path);
 
         return this;
     }
 
     @Override
-    public HttpRequest setMethod(String method) {
+    public HttpRequest setMethod(final String method) {
         METHOD_THREAD_LOCAL.set(method);
 
         return this;
     }
 
     @Override
-    public HttpRequest setRequestSpecification(RequestSpecification specification) {
+    public HttpRequest setRequestSpecification(final RequestSpecification specification) {
         SPECIFICATION_THREAD_LOCAL.set(specification);
 
         return this;
@@ -105,45 +108,45 @@ public class RequestBuilder implements HttpRequest {
     }
 
     @Override
-    public Response post(String path) {
+    public Response post(final String path) {
         setPath(path);
-        PostHttpMethod httpMethod = new PostHttpMethod();
+        final PostHttpMethod httpMethod = new PostHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
         return httpMethod.request(this);
     }
 
     @Override
-    public Response get(String path) {
+    public Response get(final String path) {
         setPath(path);
-        GetHttpMethod httpMethod = new GetHttpMethod();
+        final GetHttpMethod httpMethod = new GetHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
         return httpMethod.request(this);
     }
 
     @Override
-    public Response put(String path) {
+    public Response put(final String path) {
         setPath(path);
-        PutHttpMethod httpMethod = new PutHttpMethod();
+        final PutHttpMethod httpMethod = new PutHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
         return httpMethod.request(this);
     }
 
     @Override
-    public Response patch(String path) {
+    public Response patch(final String path) {
         setPath(path);
-        PatchHttpMethod httpMethod = new PatchHttpMethod();
+        final PatchHttpMethod httpMethod = new PatchHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
         return httpMethod.request(this);
     }
 
     @Override
-    public Response delete(String path) {
+    public Response delete(final String path) {
         setPath(path);
-        DeleteHttpMethod httpMethod = new DeleteHttpMethod();
+        final DeleteHttpMethod httpMethod = new DeleteHttpMethod();
         httpMethod.setRequestListener(this::resetBuilder);
 
         return httpMethod.request(this);

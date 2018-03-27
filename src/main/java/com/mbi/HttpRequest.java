@@ -6,6 +6,9 @@ import io.restassured.specification.RequestSpecification;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface HttpRequest {
 
     HttpRequest setHeader(String header, String value);

@@ -8,16 +8,21 @@ import io.restassured.specification.RequestSpecification;
 
 import java.util.Objects;
 
+/**
+ *
+ */
 public interface HttpRequestMethod {
 
-    default RequestSpecification getSpecification(RequestBuilder builder) {
+    default RequestSpecification getSpecification(final RequestBuilder builder) {
         return new Configurator().configureRequest(builder);
     }
 
-    default void checkStatusCode(Response r, RequestBuilder builder) {
+    @SuppressWarnings({"PMD.AvoidThrowingNewInstanceOfSameException", "PMD.PreserveStackTrace"})
+    default void checkStatusCode(final Response r, final RequestBuilder builder) {
         // No need to check status code if it's not set
-        if (Objects.isNull(builder.getStatusCode()))
+        if (Objects.isNull(builder.getStatusCode())) {
             return;
+        }
 
         try {
             r.then().assertThat().statusCode(builder.getStatusCode());
