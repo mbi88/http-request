@@ -13,7 +13,7 @@ public interface HttpRequest {
 
     HttpRequest setHeader(String header, String value);
 
-    HttpRequest setHeader(List<Header> header);
+    HttpRequest setHeaders(List<Header> headers);
 
     HttpRequest setData(Object data);
 
@@ -23,17 +23,13 @@ public interface HttpRequest {
 
     HttpRequest setRequestSpecification(RequestSpecification specification);
 
-    HttpRequest setPath(String path);
+    Response post(String url);
 
-    HttpRequest setMethod(String method);
+    Response get(String url);
 
-    Response post(String path);
+    Response put(String url);
 
-    Response get(String path);
+    Response patch(String url);
 
-    Response put(String path);
-
-    Response patch(String path);
-
-    Response delete(String path);
+    Response delete(String url);
 }

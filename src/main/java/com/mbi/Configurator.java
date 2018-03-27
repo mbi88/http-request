@@ -9,7 +9,15 @@ import static io.restassured.RestAssured.given;
 /**
  *
  */
-public class Configurator {
+class Configurator {
+
+    private final RequestBuilder builder;
+    private RequestSpecification spec;
+
+    Configurator(final RequestBuilder builder) {
+        this.builder = builder;
+        spec = configureRequest();
+    }
 
     private RequestSpecification defaultSpecification() {
         return given()
@@ -17,8 +25,12 @@ public class Configurator {
                 .accept("application/json");
     }
 
-    public RequestSpecification configureRequest(final RequestBuilder builder) {
-        final RequestSpecification spec = defaultSpecification();
+    public RequestSpecification getSpec() {
+        return this.spec;
+    }
+
+    private RequestSpecification configureRequest() {
+        spec = defaultSpecification();
 
         if (builder.getSpecification() != null) {
             spec.spec(builder.getSpecification());
@@ -29,7 +41,7 @@ public class Configurator {
         }
 
         if (builder.getData() != null) {
-            spec.body(builder.getData().toString());
+            spec.body(builder.getData());
         }
 
         if (builder.getHeaders() != null) {

@@ -3,6 +3,7 @@ package com.mbi;
 /**
  *
  */
-public interface OnRequestPerformedListener {
+@FunctionalInterface
+interface OnRequestPerformedListener {
     void onRequestPerformed();
 }
