@@ -29,6 +29,10 @@ class Configurator {
         return this.spec;
     }
 
+    public RequestBuilder getBuilder() {
+        return this.builder;
+    }
+
     private RequestSpecification configureRequest() {
         spec = defaultSpecification();
 

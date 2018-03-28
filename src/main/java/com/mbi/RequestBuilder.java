@@ -100,10 +100,10 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         setUrl(url);
         setMethod(HttpMethods.POST);
 
-        final HttpRequestMethod httpMethod = new HttpRequestMethod();
+        final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request(this);
+        return httpMethod.request();
     }
 
     @Override
@@ -111,10 +111,10 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         setUrl(url);
         setMethod(HttpMethods.GET);
 
-        final HttpRequestMethod httpMethod = new HttpRequestMethod();
+        final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request(this);
+        return httpMethod.request();
     }
 
     @Override
@@ -122,10 +122,10 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         setUrl(url);
         setMethod(HttpMethods.PUT);
 
-        final HttpRequestMethod httpMethod = new HttpRequestMethod();
+        final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request(this);
+        return httpMethod.request();
     }
 
     @Override
@@ -133,10 +133,10 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         setUrl(url);
         setMethod(HttpMethods.PATCH);
 
-        final HttpRequestMethod httpMethod = new HttpRequestMethod();
+        final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request(this);
+        return httpMethod.request();
     }
 
     @Override
@@ -144,10 +144,10 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         setUrl(url);
         setMethod(HttpMethods.DELETE);
 
-        final HttpRequestMethod httpMethod = new HttpRequestMethod();
+        final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request(this);
+        return httpMethod.request();
     }
 
     /**

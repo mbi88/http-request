@@ -2,7 +2,6 @@ package com.mbi;
 
 import io.restassured.http.Header;
 import io.restassured.specification.FilterableRequestSpecification;
-import io.restassured.specification.RequestSpecification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +11,10 @@ import java.util.List;
  */
 class CurlGenerator {
 
-    private final RequestBuilder builder;
-    private final RequestSpecification specification;
+    private final Configurator config;
 
-    CurlGenerator(final RequestBuilder builder, final RequestSpecification specification) {
-        this.builder = builder;
-        this.specification = specification;
+    CurlGenerator(final Configurator config) {
+        this.config = config;
     }
 
     public String getCurl() {
@@ -29,17 +26,17 @@ class CurlGenerator {
     }
 
     private String getMethod() {
-        return String.format(" -X %s", builder.getMethod().toString());
+        return String.format(" -X %s", config.getBuilder().getMethod().toString());
     }
 
     private String getUrl() {
-        return String.format(" '%s'", builder.getUrl());
+        return String.format(" '%s'", config.getBuilder().getUrl());
     }
 
     private String getHeaders() {
         String headersStr = "";
 
-        final FilterableRequestSpecification spec = (FilterableRequestSpecification) specification;
+        final FilterableRequestSpecification spec = (FilterableRequestSpecification) config.getSpec();
         final List<Header> headers = new ArrayList<>(spec.getHeaders().asList());
         for (Header header : headers) {
             headersStr = headersStr
@@ -53,7 +50,7 @@ class CurlGenerator {
     private String getData() {
         String data = "";
 
-        final FilterableRequestSpecification spec = (FilterableRequestSpecification) specification;
+        final FilterableRequestSpecification spec = (FilterableRequestSpecification) config.getSpec();
         if (spec.getBody() != null) {
             data = String.format(" --data '%s'", spec.getBody().toString());
         }
