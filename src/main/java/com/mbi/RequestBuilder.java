@@ -159,7 +159,7 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         setData(null);
         setExpectedStatusCode(null);
         setToken(null);
-        setHeaders(new ArrayList<>());
+        setHeaders(null);
         setMethod(null);
         setRequestSpecification(null);
     }
