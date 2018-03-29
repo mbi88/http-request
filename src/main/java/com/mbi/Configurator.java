@@ -45,7 +45,7 @@ class Configurator {
         }
 
         if (builder.getData() != null) {
-            spec.body(builder.getData());
+            spec.body(builder.getData().toString());
         }
 
         if (builder.getHeaders() != null) {
