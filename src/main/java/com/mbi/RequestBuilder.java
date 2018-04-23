@@ -63,7 +63,7 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         return URL_THREAD_LOCAL.get();
     }
 
-    private void setUrl(final String url) {
+    public void setUrl(final String url) {
         URL_THREAD_LOCAL.set(url);
     }
 
