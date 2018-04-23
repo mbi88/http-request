@@ -59,12 +59,14 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         return this;
     }
 
-    public String getUrl() {
-        return URL_THREAD_LOCAL.get();
+    @Override
+    public HttpRequest setUrl(final String url) {
+        URL_THREAD_LOCAL.set(url);
+        return this;
     }
 
-    public void setUrl(final String url) {
-        URL_THREAD_LOCAL.set(url);
+    public String getUrl() {
+        return URL_THREAD_LOCAL.get();
     }
 
     public Object getData() {

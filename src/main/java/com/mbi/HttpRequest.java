@@ -23,6 +23,8 @@ public interface HttpRequest {
 
     HttpRequest setRequestSpecification(RequestSpecification specification);
 
+    HttpRequest setUrl(String url);
+
     Response post(String url);
 
     Response get(String url);
