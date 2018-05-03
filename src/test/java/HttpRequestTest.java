@@ -16,7 +16,7 @@ public class HttpRequestTest {
     private HttpRequest http = new RequestBuilder();
 
     @Test
-    public void testName() {
+    public void test() {
         RequestSpecification specification = given()
                 .header("asd", "")
                 .body("asd");
@@ -64,7 +64,7 @@ public class HttpRequestTest {
             http.get("ads");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("curl -X GET 'ads' " +
-                    "-H 'Accept: application/json' -H 'Content-Type: application/json; charset=UTF-8'"));
+                    "-H 'Accept: application/json' -H 'Content-Type: application/json; charset=UTF-8'\n\n"));
         }
     }
 
@@ -85,7 +85,7 @@ public class HttpRequestTest {
         try {
             http.setData(1).get("asd");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().endsWith("--data '1'"));
+            assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
     }
 
@@ -107,7 +107,7 @@ public class HttpRequestTest {
                     .setData(2)
                     .get("asd");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().endsWith("--data '2'"));
+            assertTrue(error.getMessage().endsWith("--data '2'\n\n"));
         }
     }
 
@@ -198,7 +198,7 @@ public class HttpRequestTest {
                     .get("asd");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("curl -X GET 'asd' -H 'Accept: application/json' " +
-                    "-H 'Authorization: token1' -H 'Content-Type: application/json; charset=UTF-8' --data '1'"));
+                    "-H 'Authorization: token1' -H 'Content-Type: application/json; charset=UTF-8' --data '1'\n\n"));
         }
     }
 
@@ -208,7 +208,7 @@ public class HttpRequestTest {
             http.get("asd");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("curl -X GET 'asd' -H 'Accept: application/json' " +
-                    "-H 'Content-Type: application/json; charset=UTF-8'"));
+                    "-H 'Content-Type: application/json; charset=UTF-8'\n\n"));
         }
     }
 
@@ -242,13 +242,13 @@ public class HttpRequestTest {
         try {
             http.setData(1).get("asd");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().endsWith("--data '1'"));
+            assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
 
         try {
             http.get("asd");
         } catch (AssertionError error) {
-            assertFalse(error.getMessage().endsWith("--data '1'"));
+            assertFalse(error.getMessage().endsWith("--data '1'\n\n"));
         }
     }
 }

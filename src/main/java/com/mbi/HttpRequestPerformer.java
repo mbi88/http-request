@@ -41,7 +41,7 @@ final class HttpRequestPerformer {
             throw new AssertionError(throwable.getMessage()
                     .concat(String.format("%nUrl: %s%n%n", config.getBuilder().getUrl()))
                     .concat(String.format("Response: %s%n%n", Objects.isNull(r) ? null : r.asString()))
-                    .concat("Request: " + new CurlGenerator(config).getCurl()));
+                    .concat(String.format("Request: %s%n%n", new CurlGenerator(config).getCurl())));
         } finally {
             requestListener.onRequestPerformed();
         }
