@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
+ * Request builder. All fields are thread local.
  */
 public final class RequestBuilder implements HttpRequest, Resettable {
 

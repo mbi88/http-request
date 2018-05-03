@@ -5,7 +5,7 @@ import io.restassured.response.Response;
 import java.util.Objects;
 
 /**
- *
+ * Performs request.
  */
 final class HttpRequestPerformer {
 
