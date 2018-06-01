@@ -10,91 +10,95 @@ import java.util.Objects;
 
 /**
  * Request builder. All fields are thread local.
+ * <p>
+ * ThreadLocal variables are not static in this case.
+ * Is meant as a single container per instance, not container per class.
+ * May create memory leak.
  */
 public final class RequestBuilder implements HttpRequest, Resettable {
 
-    private static final ThreadLocal<String> URL_THREAD_LOCAL = new ThreadLocal<>();
-    private static final ThreadLocal<HttpMethods> METHOD_THREAD_LOCAL = new ThreadLocal<>();
-    private static final ThreadLocal<Object> DATA_THREAD_LOCAL = new ThreadLocal<>();
-    private static final ThreadLocal<Integer> STATUS_CODE_THREAD_LOCAL = new ThreadLocal<>();
-    private static final ThreadLocal<String> TOKEN_THREAD_LOCAL = new ThreadLocal<>();
-    private static final ThreadLocal<List<Header>> HEADERS_THREAD_LOCAL = new ThreadLocal<>();
-    private static final ThreadLocal<RequestSpecification> SPECIFICATION_THREAD_LOCAL = new ThreadLocal<>();
+    private final ThreadLocal<String> urlThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<HttpMethods> methodsThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<Object> dataThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<Integer> statusCodeThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<String> tokenThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<List<Header>> headersThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<RequestSpecification> specificationThreadLocal = new ThreadLocal<>();
 
     @Override
     public HttpRequest setHeader(final String header, final String value) {
         final List<Header> list = Objects.isNull(getHeaders()) ? new ArrayList<>() : getHeaders();
         list.add(new Header(header, value));
-        HEADERS_THREAD_LOCAL.set(list);
+        headersThreadLocal.set(list);
         return this;
     }
 
     @Override
     public HttpRequest setHeaders(final List<Header> headers) {
-        HEADERS_THREAD_LOCAL.set(headers);
+        headersThreadLocal.set(headers);
         return this;
     }
 
     @Override
     public HttpRequest setData(final Object data) {
-        DATA_THREAD_LOCAL.set(data);
+        dataThreadLocal.set(data);
         return this;
     }
 
     @Override
     public HttpRequest setToken(final String token) {
-        TOKEN_THREAD_LOCAL.set(token);
+        tokenThreadLocal.set(token);
         return this;
     }
 
     @Override
     public HttpRequest setExpectedStatusCode(final Integer statusCode) {
-        STATUS_CODE_THREAD_LOCAL.set(statusCode);
+        statusCodeThreadLocal.set(statusCode);
         return this;
     }
 
     @Override
     public HttpRequest setRequestSpecification(final RequestSpecification specification) {
-        SPECIFICATION_THREAD_LOCAL.set(specification);
+        specificationThreadLocal.set(specification);
         return this;
     }
 
     @Override
     public HttpRequest setUrl(final String url) {
-        URL_THREAD_LOCAL.set(url);
+        urlThreadLocal.set(url);
         return this;
     }
 
     public String getUrl() {
-        return URL_THREAD_LOCAL.get();
+        return urlThreadLocal.get();
     }
 
     public Object getData() {
-        return DATA_THREAD_LOCAL.get();
+        return dataThreadLocal.get();
     }
 
     public Integer getStatusCode() {
-        return STATUS_CODE_THREAD_LOCAL.get();
+        return statusCodeThreadLocal.get();
     }
 
     public String getToken() {
-        return TOKEN_THREAD_LOCAL.get();
+        return tokenThreadLocal.get();
     }
 
     public List<Header> getHeaders() {
-        return HEADERS_THREAD_LOCAL.get();
+        return headersThreadLocal.get();
     }
 
     public RequestSpecification getSpecification() {
-        return SPECIFICATION_THREAD_LOCAL.get();
+        return specificationThreadLocal.get();
     }
 
     public HttpMethods getMethod() {
-        return METHOD_THREAD_LOCAL.get();
+        return methodsThreadLocal.get();
     }
 
     private void setMethod(final HttpMethods method) {
-        METHOD_THREAD_LOCAL.set(method);
+        methodsThreadLocal.set(method);
     }
 
     @Override

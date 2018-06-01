@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 public class HttpRequestTest {
 
@@ -250,5 +249,18 @@ public class HttpRequestTest {
         } catch (AssertionError error) {
             assertFalse(error.getMessage().endsWith("--data '1'\n\n"));
         }
+    }
+
+    @Test
+    public void testThreadLocalIsSingleContainerPerInstanceNotPerClass() {
+        HttpRequest httpRequest1 = new RequestBuilder();
+        HttpRequest httpRequest2 = new RequestBuilder();
+
+        httpRequest1
+                .setData("123")
+                .setToken(httpRequest2.get("https://google.com").asString());
+
+        assertEquals(((RequestBuilder) httpRequest1).getData().toString(), "123");
+        assertNull(((RequestBuilder) httpRequest2).getData());
     }
 }
