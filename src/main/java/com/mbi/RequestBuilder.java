@@ -156,6 +156,11 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         return httpMethod.request();
     }
 
+    @Override
+    public void testM() {
+        // ad
+    }
+
     /**
      * Resets builder after request invocation.
      */
