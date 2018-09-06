@@ -110,4 +110,6 @@ public interface HttpRequest {
      * @return response.
      */
     Response delete(String url);
+
+    void testM();
 }
