@@ -8,14 +8,6 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'jacoco'
 
-group = 'com.mbi'
-version = '1.0-SNAPSHOT'
-
-description = """"""
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 def suitesDir = 'src/test/resources/suites/'
 
 repositories {
