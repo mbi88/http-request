@@ -110,4 +110,11 @@ public interface HttpRequest {
      * @return response.
      */
     Response delete(String url);
+
+    /**
+     * Test.
+     */
+    default void ttt() {
+        // test
+    }
 }
