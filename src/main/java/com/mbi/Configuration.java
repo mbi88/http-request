@@ -9,10 +9,10 @@ import static java.lang.String.format;
  */
 public final class Configuration {
 
-    private int connectionTimeout;
+    private Integer connectionTimeout;
     private Map<String, String> headers;
 
-    public int getConnectionTimeout() {
+    public Integer getConnectionTimeout() {
         return connectionTimeout;
     }
 

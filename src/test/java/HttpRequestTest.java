@@ -1,6 +1,7 @@
 import com.mbi.HttpRequest;
 import com.mbi.RequestBuilder;
 import io.restassured.http.Header;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.Test;
 
@@ -20,6 +21,7 @@ public class HttpRequestTest {
             http
                     .setHeader("header1", "v")
                     .setHeader("header2", "v")
+                    .setExpectedStatusCode(300)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'header1: v' -H 'header2: v'"));
@@ -35,7 +37,8 @@ public class HttpRequestTest {
         try {
             http
                     .setHeaders(headers)
-                    .get("https://google.com.ua");
+                    .setExpectedStatusCode(300)
+                    .get("http://www.mocky.io/v2/5ab8a4952c00005700186093");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
         }
@@ -44,10 +47,11 @@ public class HttpRequestTest {
     @Test
     public void testWithoutHeaders() {
         try {
-            http.get("https://google.com.ua");
+            http
+                    .setExpectedStatusCode(230)
+                    .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().endsWith("curl -X GET 'ads' " +
-                    "-H 'Accept: application/json' -H 'Content-Type: application/json; charset=UTF-8'\n\n"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: */*'"));
         }
     }
 
@@ -57,6 +61,7 @@ public class HttpRequestTest {
         try {
             http
                     .setRequestSpecification(spec)
+                    .setExpectedStatusCode(342)
                     .setHeader("h2", "v").get("https://google.com.ua");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
@@ -66,7 +71,9 @@ public class HttpRequestTest {
     @Test
     public void testSetBody() {
         try {
-            http.setData(1).get("https://google.com.ua");
+            http
+                    .setExpectedStatusCode(342)
+                    .setData(1).get("https://google.com.ua");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
@@ -75,7 +82,9 @@ public class HttpRequestTest {
     @Test
     public void testWithoutBody() {
         try {
-            http.get("https://google.com.ua");
+            http
+                    .setExpectedStatusCode(324)
+                    .get("https://google.com.ua");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().contains(" --data '"));
         }
@@ -87,6 +96,7 @@ public class HttpRequestTest {
         try {
             http
                     .setRequestSpecification(spec)
+                    .setExpectedStatusCode(234)
                     .setData(2)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
@@ -99,6 +109,7 @@ public class HttpRequestTest {
         try {
             http
                     .setToken("token")
+                    .setExpectedStatusCode(4534)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'Authorization: token"));
@@ -111,6 +122,7 @@ public class HttpRequestTest {
         try {
             http
                     .setRequestSpecification(spec)
+                    .setExpectedStatusCode(24)
                     .setToken("token2")
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
@@ -122,6 +134,7 @@ public class HttpRequestTest {
     public void testWithoutToken() {
         try {
             http
+                    .setExpectedStatusCode(356)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().contains("-H 'Authorization:"));
@@ -133,6 +146,7 @@ public class HttpRequestTest {
         RequestSpecification spec = given().header(new Header("Authorization", "token1"));
         try {
             http
+                    .setExpectedStatusCode(463)
                     .setRequestSpecification(spec)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
@@ -166,7 +180,9 @@ public class HttpRequestTest {
 
     @Test
     public void testWithoutCode() {
-        http.get("https://google.com/asdasd");
+        Response r = http.get("https://google.com/asdasd");
+
+        assertTrue(r.asString().contains("<html"));
     }
 
     @Test
@@ -178,20 +194,22 @@ public class HttpRequestTest {
         try {
             http
                     .setRequestSpecification(spec)
+                    .setExpectedStatusCode(234)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().endsWith("curl -X GET 'asd' -H 'Accept: application/json' " +
-                    "-H 'Authorization: token1' -H 'Content-Type: application/json; charset=UTF-8' --data '1'\n\n"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Authorization: token1' -H "
+                    + "'Accept: */*' -H 'Content-Type: text/plain; charset=ISO-8859-1' --data '1'"));
         }
     }
 
     @Test
     public void testWithoutSpec() {
         try {
-            http.get("https://google.com.ua");
+            http
+                    .setExpectedStatusCode(342)
+                    .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().endsWith("curl -X GET 'asd' -H 'Accept: application/json' " +
-                    "-H 'Content-Type: application/json; charset=UTF-8'\n\n"));
+            assertTrue(error.getMessage().contains(" curl -X GET 'https://google.com.ua' -H 'Accept: */*'"));
         }
     }
 
@@ -223,13 +241,13 @@ public class HttpRequestTest {
     @Test
     public void testBuildersResetAfterRequest() {
         try {
-            http.setData(1).get("https://google.com.ua");
+            http.setExpectedStatusCode(234).setData(1).get("https://google.com.ua");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
 
         try {
-            http.get("https://google.com.ua");
+            http.setExpectedStatusCode(4353).get("https://google.com.ua");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().endsWith("--data '1'\n\n"));
         }
