@@ -299,4 +299,16 @@ public class HttpRequestTest {
             assertTrue(e.getMessage().contains("Connection refused"));
         }
     }
+
+    @Test
+    public void testDebug() {
+        RequestBuilder b1 = new RequestBuilder();
+        b1.debug().setUrl("https://google.com");
+
+        RequestBuilder b2 = new RequestBuilder();
+        b2.setUrl("https://google.com");
+
+        assertTrue(b1.getDebug());
+        assertFalse(b2.getDebug());
+    }
 }
