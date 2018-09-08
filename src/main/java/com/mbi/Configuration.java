@@ -16,7 +16,7 @@ public final class Configuration {
         return connectionTimeout;
     }
 
-    public void setConnectionTimeout(final int connectionTimeout) {
+    public void setConnectionTimeout(final Integer connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
 
