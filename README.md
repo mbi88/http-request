@@ -23,10 +23,19 @@ class HttpRequestTest {
     public void test() {
         request
             .setExpectedStatusCode(200)
-            .setPath("https://google.com")
-            .get();
+            .get("https://google.com");
     }
 }
+```
+
+### Properties
+Set properties `src/main/resources/http-request.yml`
+
+```yaml
+connectionTimeout: 600000
+headers:
+  Accept: application/json
+  Content-Type: application/json; charset=UTF-8
 ```
 
 ## See also
