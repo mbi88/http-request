@@ -38,7 +38,7 @@ public class HttpRequestTest {
             http
                     .setHeaders(headers)
                     .setExpectedStatusCode(300)
-                    .get("https://google.com.ua");
+                    .get("http://www.mocky.io/v2/5ab8a4952c00005700186093");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
         }

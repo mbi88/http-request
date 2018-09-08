@@ -1,7 +1,6 @@
 package com.mbi;
 
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.Header;
@@ -12,8 +11,6 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import static io.restassured.RestAssured.given;
-import static org.apache.http.params.CoreConnectionPNames.CONNECTION_TIMEOUT;
-import static org.apache.http.params.CoreConnectionPNames.SO_TIMEOUT;
 
 /**
  * Configures request.
@@ -53,15 +50,12 @@ class Configurator {
             spec.headers(configuration.getHeaders());
         }
 
-        // Set default request timeout
+        // Set request timeout
         if (!Objects.isNull(configuration.getConnectionTimeout())) {
-            final RestAssuredConfig config = RestAssured
-                    .config()
-                    .httpClient(HttpClientConfig.httpClientConfig()
-                            .setParam(CONNECTION_TIMEOUT, configuration.getConnectionTimeout())
-                            .setParam(SO_TIMEOUT, configuration.getConnectionTimeout()));
-            final RequestSpecBuilder specification = new RequestSpecBuilder().setConfig(config);
-            spec.spec(specification.build());
+            final RestAssuredConfig config = RestAssured.config().httpClient(HttpClientConfig.httpClientConfig()
+                    .setParam("http.connection.timeout", configuration.getConnectionTimeout())
+                    .setParam("http.socket.timeout", configuration.getConnectionTimeout()));
+            spec.config(config);
         }
 
         // Override specification
@@ -86,7 +80,7 @@ class Configurator {
             }
         }
 
-        // Print debug data
+        // Print debug info
         if (builder.getDebug()) {
             spec.log().everything();
         }
