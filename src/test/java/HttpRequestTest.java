@@ -15,22 +15,6 @@ public class HttpRequestTest {
     private HttpRequest http = new RequestBuilder();
 
     @Test
-    public void test() {
-        RequestSpecification specification = given()
-                .header("asd", "")
-                .body("asd");
-        http
-                .setRequestSpecification(specification)
-                .setData(100)
-                .setExpectedStatusCode(400)
-                .setHeader("1", "1")
-                .setHeader("2", "2")
-                .setToken("asd")
-                .setHeader("Cookie", "asd")
-                .get("https://google.com");
-    }
-
-    @Test
     public void testSetHeader() {
         try {
             http
@@ -253,14 +237,39 @@ public class HttpRequestTest {
 
     @Test
     public void testThreadLocalIsSingleContainerPerInstanceNotPerClass() {
-        HttpRequest httpRequest1 = new RequestBuilder();
-        HttpRequest httpRequest2 = new RequestBuilder();
+        RequestBuilder httpRequest1 = new RequestBuilder();
+        RequestBuilder httpRequest2 = new RequestBuilder();
 
         httpRequest1
                 .setData("123")
                 .setToken(httpRequest2.get("https://google.com").asString());
 
-        assertEquals(((RequestBuilder) httpRequest1).getData().toString(), "123");
-        assertNull(((RequestBuilder) httpRequest2).getData());
+        assertEquals(httpRequest1.getData().toString(), "123");
+        assertNull(httpRequest2.getData());
+    }
+
+    @Test
+    public void testDataOverriding() {
+        RequestSpecification specification = given()
+                .header("spec_header", "spec_header_value")
+                .header("h1", "h1_spec")
+                .body("body");
+
+        try {
+            http
+                    .setRequestSpecification(specification)
+                    .setData(100)
+                    .setExpectedStatusCode(100)
+                    .setHeader("h1", "h1_value")
+                    .setHeader("h2", "h2_value")
+                    .setToken("token")
+                    .setHeader("Cookie", "cookie")
+                    .get("https://google.com");
+        } catch (AssertionError e) {
+            assertTrue(e.getMessage().contains("--data '100'"), "Incorrect --data");
+            assertTrue(e.getMessage().contains("-H 'spec_header: spec_header_value' -H 'h1: h1_spec' -H 'Authorization:"
+                            + " token' -H 'h1: h1_value' -H 'h2: h2_value' -H 'Cookie: cookie'"),
+                    "Incorrect headers");
+        }
     }
 }
