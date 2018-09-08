@@ -26,11 +26,11 @@ class CurlGenerator {
     }
 
     private String getMethod() {
-        return String.format(" -X %s", config.getBuilder().getMethod().toString());
+        return String.format(" -X %s", config.getMethod());
     }
 
     private String getUrl() {
-        return String.format(" '%s'", config.getBuilder().getUrl());
+        return String.format(" '%s'", config.getUrl());
     }
 
     private String getHeaders() {

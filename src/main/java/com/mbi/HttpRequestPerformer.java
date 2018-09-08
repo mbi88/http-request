@@ -18,11 +18,11 @@ final class HttpRequestPerformer {
 
     private void checkStatusCode(final Response r) {
         // No need to check status code if it's not set
-        if (Objects.isNull(config.getBuilder().getStatusCode())) {
+        if (Objects.isNull(config.getStatusCode())) {
             return;
         }
 
-        r.then().assertThat().statusCode(config.getBuilder().getStatusCode());
+        r.then().assertThat().statusCode(config.getStatusCode());
     }
 
     /**
@@ -31,17 +31,18 @@ final class HttpRequestPerformer {
      * @return response.
      * @throws AssertionError on errors. Exception message contains url, response and request as a curl.
      */
-    @SuppressWarnings("PMD.PreserveStackTrace")
     public Response request() {
         Response r = null;
         try {
-            r = config.getSpec().request(config.getBuilder().getMethod().toString(), config.getBuilder().getUrl());
+            r = config.getSpec().request(config.getMethod(), config.getUrl());
             checkStatusCode(r);
-        } catch (Throwable throwable) {
-            throw new AssertionError(throwable.getMessage()
-                    .concat(String.format("%nUrl: %s%n%n", config.getBuilder().getUrl()))
+        } catch (AssertionError assertionError) {
+            throw new AssertionError(assertionError
+                    .getMessage()
+                    .concat(String.format("%nUrl: %s%n%n", config.getUrl()))
                     .concat(String.format("Response: %s%n%n", Objects.isNull(r) ? null : r.asString()))
-                    .concat(String.format("Request: %s%n%n", new CurlGenerator(config).getCurl())));
+                    .concat(String.format("Request: %s%n%n", new CurlGenerator(config).getCurl())),
+                    assertionError);
         } finally {
             requestListener.onRequestPerformed();
         }
