@@ -72,6 +72,13 @@ public interface HttpRequest {
     HttpRequest setUrl(String url);
 
     /**
+     * Prints request debug info.
+     *
+     * @return HttpRequest,
+     */
+    HttpRequest debug();
+
+    /**
      * Performs post request.
      *
      * @param url request url.

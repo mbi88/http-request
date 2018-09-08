@@ -24,6 +24,7 @@ public final class RequestBuilder implements HttpRequest, Resettable {
     private final ThreadLocal<String> tokenThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<List<Header>> headersThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<RequestSpecification> specificationThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<Boolean> debugThreadLocal = new ThreadLocal<>();
 
     @Override
     public HttpRequest setHeader(final String header, final String value) {
@@ -69,6 +70,17 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         return this;
     }
 
+    @Override
+    public HttpRequest debug() {
+        debugThreadLocal.set(true);
+        return this;
+    }
+
+    private HttpRequest debug(final boolean isDebug) {
+        debugThreadLocal.set(isDebug);
+        return this;
+    }
+
     public String getUrl() {
         return urlThreadLocal.get();
     }
@@ -95,6 +107,10 @@ public final class RequestBuilder implements HttpRequest, Resettable {
 
     public HttpMethods getMethod() {
         return methodsThreadLocal.get();
+    }
+
+    public Boolean getDebug() {
+        return !Objects.isNull(debugThreadLocal.get()) && !debugThreadLocal.get().equals(false);
     }
 
     private void setMethod(final HttpMethods method) {
@@ -168,5 +184,6 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         setHeaders(null);
         setMethod(null);
         setRequestSpecification(null);
+        debug(false);
     }
 }

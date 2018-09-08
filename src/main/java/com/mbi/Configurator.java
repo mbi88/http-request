@@ -86,6 +86,11 @@ class Configurator {
             }
         }
 
+        // Print debug data
+        if (builder.getDebug()) {
+            spec.log().everything();
+        }
+
         return spec;
     }
 
