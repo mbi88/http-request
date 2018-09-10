@@ -51,7 +51,8 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(230)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: */*'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: application/json' "
+                    + "-H 'Content-Type: application/json; charset=UTF-8'"));
         }
     }
 
@@ -225,8 +226,8 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(234)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Authorization: token1' -H "
-                    + "'Accept: */*' -H 'Content-Type: text/plain; charset=ISO-8859-1' --data '1'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: application/json' "
+                    + "-H 'Authorization: token1' -H 'Content-Type: application/json; charset=UTF-8' --data '1'"));
         }
     }
 
@@ -237,7 +238,8 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(342)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains(" curl -X GET 'https://google.com.ua' -H 'Accept: */*'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: application/json' "
+                    + "-H 'Content-Type: application/json; charset=UTF-8'"));
         }
     }
 
@@ -329,14 +331,24 @@ public class HttpRequestTest {
     }
 
     @Test
-    public void testDebug() {
+    public void testDebugTrue() {
         RequestBuilder b1 = new RequestBuilder();
-        b1.debug().setUrl("https://google.com");
+        b1
+                .debug()
+                .setUrl("https://google.com");
+
+        assertTrue(b1.getDebug());
+    }
+
+    @Test
+    public void testDebugFalse() {
+        RequestBuilder b1 = new RequestBuilder();
+        b1.debug().get("https://google.com");
 
         RequestBuilder b2 = new RequestBuilder();
         b2.setUrl("https://google.com");
 
-        assertTrue(b1.getDebug());
+        assertFalse(b1.getDebug());
         assertFalse(b2.getDebug());
     }
 
