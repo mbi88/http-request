@@ -19,17 +19,11 @@ class Configurator {
 
     private final RequestBuilder builder;
     private final Configuration configuration;
-    private final String url;
-    private final String method;
-    private final Integer statusCode;
     private int maxResponseLength;
     private RequestSpecification spec;
 
     Configurator(final RequestBuilder builder) {
         this.builder = builder;
-        this.url = builder.getUrl();
-        this.method = builder.getMethod().toString();
-        this.statusCode = builder.getStatusCode();
         configuration = readConfiguration();
         spec = configureRequest();
     }
@@ -116,15 +110,15 @@ class Configurator {
     }
 
     public String getUrl() {
-        return this.url;
+        return this.builder.getUrl();
     }
 
     public String getMethod() {
-        return this.method;
+        return this.builder.getMethod().toString();
     }
 
     public Integer getStatusCode() {
-        return this.statusCode;
+        return this.builder.getStatusCode();
     }
 
     public int getMaxResponseLength() {
