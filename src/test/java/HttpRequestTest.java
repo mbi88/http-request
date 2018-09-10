@@ -69,6 +69,34 @@ public class HttpRequestTest {
     }
 
     @Test
+    public void testSpecHeaders() {
+        RequestSpecification spec = given().header("h1", "v");
+        try {
+            http
+                    .setToken("wer")
+                    .setRequestSpecification(spec)
+                    .setExpectedStatusCode(342)
+                    .get("https://google.com.ua");
+        } catch (AssertionError error) {
+            assertTrue(error.getMessage().contains("-H 'h1: v' -H 'Authorization: wer'"));
+        }
+    }
+
+    @Test
+    public void testHeadersOverride() {
+        RequestSpecification spec = given().header("Accept", "1");
+        try {
+            http
+                    .setRequestSpecification(spec)
+                    .setHeader("Accept", "2")
+                    .setExpectedStatusCode(342)
+                    .get("https://google.com.ua");
+        } catch (AssertionError error) {
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: 2'"));
+        }
+    }
+
+    @Test
     public void testSetBody() {
         try {
             http

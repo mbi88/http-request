@@ -18,11 +18,11 @@ import static io.restassured.RestAssured.given;
 class Configurator {
 
     private final RequestBuilder builder;
-    private RequestSpecification spec;
     private final Configuration configuration;
     private final String url;
     private final String method;
     private final Integer statusCode;
+    private RequestSpecification spec;
 
     Configurator(final RequestBuilder builder) {
         this.builder = builder;
@@ -73,7 +73,7 @@ class Configurator {
             spec.body(builder.getData().toString());
         }
 
-        // Set or override headers
+        // Append headers
         if (builder.getHeaders() != null) {
             for (Header header : builder.getHeaders()) {
                 spec.header(header);
