@@ -38,11 +38,14 @@ final class HttpRequestPerformer {
             r = config.getSpec().request(config.getMethod(), config.getUrl(), pathParams);
             checkStatusCode(r);
         } catch (AssertionError assertionError) {
-            throw new AssertionError(assertionError
-                    .getMessage()
-                    .concat(String.format("%nUrl: %s%n%n", config.getUrl()))
-                    .concat(String.format("Response: %s%n%n", Objects.isNull(r) ? "null" : r.asString()))
-                    .concat(String.format("Request: %s%n%n", new CurlGenerator(config).getCurl())),
+            throw new AssertionError(
+                    new MessageComposer(
+                            assertionError.getMessage(),
+                            config.getUrl(),
+                            Objects.isNull(r) ? "null" : r.asString(),
+                            new CurlGenerator(config).getCurl(),
+                            config.getMaxResponseLength())
+                            .composeMessage(),
                     assertionError);
         } finally {
             requestListener.onRequestPerformed();

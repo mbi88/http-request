@@ -22,6 +22,7 @@ class Configurator {
     private final String url;
     private final String method;
     private final Integer statusCode;
+    private int maxResponseLength;
     private RequestSpecification spec;
 
     Configurator(final RequestBuilder builder) {
@@ -33,6 +34,21 @@ class Configurator {
         spec = configureRequest();
     }
 
+    private RequestSpecification configureRequest() {
+        spec = given();
+
+        setDefaultHeaders();
+        setRequestTimeout();
+        setSpecification();
+        setToken();
+        setData();
+        appendHeaders();
+        setDebug();
+        setMaxResponseLength();
+
+        return spec;
+    }
+
     private Configuration readConfiguration() {
         final InputStream in = getClass().getClassLoader().getResourceAsStream("http-request.yml");
         if (Objects.isNull(in)) {
@@ -42,50 +58,57 @@ class Configurator {
         return new Yaml().loadAs(in, Configuration.class);
     }
 
-    private RequestSpecification configureRequest() {
-        spec = given();
-
-        // Set default headers
+    private void setDefaultHeaders() {
         if (!Objects.isNull(configuration.getHeaders())) {
             spec.headers(configuration.getHeaders());
         }
+    }
 
-        // Set request timeout
+    private void setRequestTimeout() {
         if (!Objects.isNull(configuration.getConnectionTimeout())) {
             final RestAssuredConfig config = RestAssured.config().httpClient(HttpClientConfig.httpClientConfig()
                     .setParam("http.connection.timeout", configuration.getConnectionTimeout())
                     .setParam("http.socket.timeout", configuration.getConnectionTimeout()));
             spec.config(config);
         }
+    }
 
-        // Override specification
+    private void setSpecification() {
         if (builder.getSpecification() != null) {
             spec.spec(builder.getSpecification());
         }
+    }
 
-        // Set or override token
+    private void setToken() {
         if (builder.getToken() != null) {
             spec.header("Authorization", builder.getToken());
         }
+    }
 
-        // Set or override data
+    private void setData() {
         if (builder.getData() != null) {
             spec.body(builder.getData().toString());
         }
+    }
 
-        // Append headers
+    private void appendHeaders() {
         if (builder.getHeaders() != null) {
             for (Header header : builder.getHeaders()) {
                 spec.header(header);
             }
         }
+    }
 
-        // Print debug info
+    private void setDebug() {
         if (builder.getDebug()) {
             spec.log().everything();
         }
+    }
 
-        return spec;
+    private void setMaxResponseLength() {
+        if (!Objects.isNull(configuration.getMaxResponseLength())) {
+            this.maxResponseLength = configuration.getMaxResponseLength();
+        }
     }
 
     public RequestSpecification getSpec() {
@@ -102,5 +125,9 @@ class Configurator {
 
     public Integer getStatusCode() {
         return this.statusCode;
+    }
+
+    public int getMaxResponseLength() {
+        return this.maxResponseLength;
     }
 }
