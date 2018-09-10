@@ -28,13 +28,14 @@ final class HttpRequestPerformer {
     /**
      * Performs request. Compares status code with expected. Finally resets request builder to default.
      *
+     * @param pathParams path parameters.
      * @return response.
      * @throws AssertionError on errors. Exception message contains url, response and request as a curl.
      */
-    public Response request() {
+    public Response request(final Object... pathParams) {
         Response r = null;
         try {
-            r = config.getSpec().request(config.getMethod(), config.getUrl());
+            r = config.getSpec().request(config.getMethod(), config.getUrl(), pathParams);
             checkStatusCode(r);
         } catch (AssertionError assertionError) {
             throw new AssertionError(assertionError

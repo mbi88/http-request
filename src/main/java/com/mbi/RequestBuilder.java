@@ -118,58 +118,58 @@ public final class RequestBuilder implements HttpRequest, Resettable {
     }
 
     @Override
-    public Response post(final String url) {
+    public Response post(final String url, final Object... pathParams) {
         setUrl(url);
         setMethod(HttpMethods.POST);
 
         final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request();
+        return httpMethod.request(pathParams);
     }
 
     @Override
-    public Response get(final String url) {
+    public Response get(final String url, final Object... pathParams) {
         setUrl(url);
         setMethod(HttpMethods.GET);
 
         final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request();
+        return httpMethod.request(pathParams);
     }
 
     @Override
-    public Response put(final String url) {
+    public Response put(final String url, final Object... pathParams) {
         setUrl(url);
         setMethod(HttpMethods.PUT);
 
         final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request();
+        return httpMethod.request(pathParams);
     }
 
     @Override
-    public Response patch(final String url) {
+    public Response patch(final String url, final Object... pathParams) {
         setUrl(url);
         setMethod(HttpMethods.PATCH);
 
         final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request();
+        return httpMethod.request(pathParams);
     }
 
     @Override
-    public Response delete(final String url) {
+    public Response delete(final String url, final Object... pathParams) {
         setUrl(url);
         setMethod(HttpMethods.DELETE);
 
         final HttpRequestPerformer httpMethod = new HttpRequestPerformer(this);
         httpMethod.setRequestListener(this::reset);
 
-        return httpMethod.request();
+        return httpMethod.request(pathParams);
     }
 
     /**

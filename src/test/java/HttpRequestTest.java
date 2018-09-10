@@ -339,4 +339,11 @@ public class HttpRequestTest {
         assertTrue(b1.getDebug());
         assertFalse(b2.getDebug());
     }
+
+    @Test
+    public void testPathParams() {
+        Response r = http.get("http://www.mocky.io/v2/{id}", "5ab8a4952c00005700186093");
+
+        assertTrue(r.asString().contains("\"a\": 1"), r.asString());
+    }
 }

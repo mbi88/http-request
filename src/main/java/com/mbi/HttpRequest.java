@@ -81,40 +81,45 @@ public interface HttpRequest {
     /**
      * Performs post request.
      *
-     * @param url request url.
+     * @param url        request url.
+     * @param pathParams path parameters.
      * @return response.
      */
-    Response post(String url);
+    Response post(String url, Object... pathParams);
 
     /**
      * Performs get request.
      *
-     * @param url request url.
+     * @param url        request url.
+     * @param pathParams path parameters.
      * @return response.
      */
-    Response get(String url);
+    Response get(String url, Object... pathParams);
 
     /**
      * Performs put request.
      *
-     * @param url request url.
+     * @param url        request url.
+     * @param pathParams path parameters.
      * @return response.
      */
-    Response put(String url);
+    Response put(String url, Object... pathParams);
 
     /**
      * Performs patch request.
      *
-     * @param url request url.
+     * @param url        request url.
+     * @param pathParams path parameters.
      * @return response.
      */
-    Response patch(String url);
+    Response patch(String url, Object... pathParams);
 
     /**
      * Performs delete request.
      *
-     * @param url request url.
+     * @param url        request url.
+     * @param pathParams path parameters.
      * @return response.
      */
-    Response delete(String url);
+    Response delete(String url, Object... pathParams);
 }
