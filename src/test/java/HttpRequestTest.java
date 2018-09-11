@@ -62,7 +62,8 @@ public class HttpRequestTest {
             http
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(342)
-                    .setHeader("h2", "v").get("https://google.com.ua");
+                    .setHeader("h2", "v")
+                    .get("https://google.com.ua");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
         }
