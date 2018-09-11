@@ -1,10 +1,10 @@
-package com.mbi;
+package com.mbi.utils;
 
 
 /**
  * Composes error message on request failure.
  */
-final class MessageComposer {
+public final class MessageComposer {
 
     private final String error;
     private final String url;
@@ -12,7 +12,7 @@ final class MessageComposer {
     private final String request;
     private final int responseLength;
 
-    MessageComposer(
+    public MessageComposer(
             final String error,
             final String url,
             final String response,

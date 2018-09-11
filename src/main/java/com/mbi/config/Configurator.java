@@ -1,5 +1,6 @@
-package com.mbi;
+package com.mbi.config;
 
+import com.mbi.request.RequestBuilder;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -15,29 +16,27 @@ import static io.restassured.RestAssured.given;
 /**
  * Configures request.
  */
-class Configurator {
+public class Configurator {
 
     private final RequestBuilder builder;
     private final Configuration configuration;
     private int maxResponseLength;
-    private RequestSpecification spec;
 
-    Configurator(final RequestBuilder builder) {
+    public Configurator(final RequestBuilder builder) {
         this.builder = builder;
         configuration = readConfiguration();
-        spec = configureRequest();
     }
 
     private RequestSpecification configureRequest() {
-        spec = given();
+        final RequestSpecification spec = given();
 
-        setDefaultHeaders();
-        setRequestTimeout();
-        setSpecification();
-        setToken();
-        setData();
-        appendHeaders();
-        setDebug();
+        setDefaultHeaders(spec);
+        setRequestTimeout(spec);
+        setSpecification(spec);
+        setToken(spec);
+        setData(spec);
+        appendHeaders(spec);
+        setDebug(spec);
         setMaxResponseLength();
 
         return spec;
@@ -52,13 +51,13 @@ class Configurator {
         return new Yaml().loadAs(in, Configuration.class);
     }
 
-    private void setDefaultHeaders() {
+    private void setDefaultHeaders(final RequestSpecification spec) {
         if (!Objects.isNull(configuration.getHeaders())) {
             spec.headers(configuration.getHeaders());
         }
     }
 
-    private void setRequestTimeout() {
+    private void setRequestTimeout(final RequestSpecification spec) {
         if (!Objects.isNull(configuration.getConnectionTimeout())) {
             final RestAssuredConfig config = RestAssured.config().httpClient(HttpClientConfig.httpClientConfig()
                     .setParam("http.connection.timeout", configuration.getConnectionTimeout())
@@ -67,25 +66,25 @@ class Configurator {
         }
     }
 
-    private void setSpecification() {
+    private void setSpecification(final RequestSpecification spec) {
         if (builder.getSpecification() != null) {
             spec.spec(builder.getSpecification());
         }
     }
 
-    private void setToken() {
+    private void setToken(final RequestSpecification spec) {
         if (builder.getToken() != null) {
             spec.header("Authorization", builder.getToken());
         }
     }
 
-    private void setData() {
+    private void setData(final RequestSpecification spec) {
         if (builder.getData() != null) {
             spec.body(builder.getData().toString());
         }
     }
 
-    private void appendHeaders() {
+    private void appendHeaders(final RequestSpecification spec) {
         if (builder.getHeaders() != null) {
             for (Header header : builder.getHeaders()) {
                 spec.header(header);
@@ -93,7 +92,7 @@ class Configurator {
         }
     }
 
-    private void setDebug() {
+    private void setDebug(final RequestSpecification spec) {
         if (builder.getDebug()) {
             spec.log().everything();
         }
@@ -106,7 +105,7 @@ class Configurator {
     }
 
     public RequestSpecification getSpec() {
-        return this.spec;
+        return configureRequest();
     }
 
     public String getUrl() {

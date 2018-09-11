@@ -1,9 +1,9 @@
-package com.mbi;
+package com.mbi.request;
 
 /**
  * Request listener.
  */
 @FunctionalInterface
-interface OnRequestPerformedListener {
+public interface OnRequestPerformedListener {
     void onRequestPerformed();
 }

@@ -1,5 +1,6 @@
-package com.mbi;
+package com.mbi.request;
 
+import com.mbi.HttpRequest;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;

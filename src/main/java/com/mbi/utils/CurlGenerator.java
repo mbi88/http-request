@@ -1,5 +1,6 @@
-package com.mbi;
+package com.mbi.utils;
 
+import com.mbi.config.Configurator;
 import io.restassured.http.Header;
 import io.restassured.specification.FilterableRequestSpecification;
 
@@ -9,11 +10,11 @@ import java.util.List;
 /**
  * Generates a curl.
  */
-class CurlGenerator {
+public final class CurlGenerator {
 
     private final Configurator config;
 
-    CurlGenerator(final Configurator config) {
+    public CurlGenerator(final Configurator config) {
         this.config = config;
     }
 

@@ -1,9 +1,9 @@
-package com.mbi;
+package com.mbi.request;
 
 /**
  * Resets builder to default.
  */
 @FunctionalInterface
-interface Resettable {
+public interface Resettable {
     void reset();
 }

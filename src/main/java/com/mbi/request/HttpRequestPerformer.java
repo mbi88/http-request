@@ -1,5 +1,8 @@
-package com.mbi;
+package com.mbi.request;
 
+import com.mbi.config.Configurator;
+import com.mbi.utils.CurlGenerator;
+import com.mbi.utils.MessageComposer;
 import io.restassured.response.Response;
 
 import java.util.Objects;

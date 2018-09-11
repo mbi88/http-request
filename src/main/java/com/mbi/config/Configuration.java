@@ -1,4 +1,4 @@
-package com.mbi;
+package com.mbi.config;
 
 import java.util.Map;
 

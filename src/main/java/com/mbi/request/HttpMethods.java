@@ -1,8 +1,8 @@
-package com.mbi;
+package com.mbi.request;
 
 /**
  * Supported http methods.
  */
-enum HttpMethods {
+public enum HttpMethods {
     POST, GET, PATCH, PUT, DELETE
 }

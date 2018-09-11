@@ -1,5 +1,5 @@
 import com.mbi.HttpRequest;
-import com.mbi.RequestBuilder;
+import com.mbi.request.RequestBuilder;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -51,7 +51,7 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(230)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: */*'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua'"));
         }
     }
 
@@ -225,8 +225,7 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(234)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Authorization: token1' -H "
-                    + "'Accept: */*' -H 'Content-Type: text/plain; charset=ISO-8859-1' --data '1'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Authorization: token1' --data '1'"));
         }
     }
 
@@ -237,7 +236,7 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(342)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains(" curl -X GET 'https://google.com.ua' -H 'Accept: */*'"));
+            assertTrue(error.getMessage().contains(" curl -X GET 'https://google.com.ua'"));
         }
     }
 
