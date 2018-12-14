@@ -12,6 +12,7 @@ import java.util.List;
  * Error message contains url, response and request as a curl.
  * Resets builder to default after each request.
  */
+@SuppressWarnings("PMD.LinguisticNaming")
 public interface HttpRequest {
 
     /**

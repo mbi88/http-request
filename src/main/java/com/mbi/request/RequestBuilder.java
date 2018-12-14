@@ -16,6 +16,7 @@ import java.util.Objects;
  * Is meant as a single container per instance, not container per class.
  * May create memory leak.
  */
+@SuppressWarnings("PMD.LinguisticNaming")
 public final class RequestBuilder implements HttpRequest, Resettable {
 
     private final ThreadLocal<String> urlThreadLocal = new ThreadLocal<>();
