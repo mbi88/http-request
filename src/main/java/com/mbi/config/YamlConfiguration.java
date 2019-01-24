@@ -3,9 +3,9 @@ package com.mbi.config;
 import java.util.Map;
 
 /**
- * Configuration POJO.
+ * YAML configuration.
  */
-public final class Configuration {
+public final class YamlConfiguration {
 
     private Integer connectionTimeout;
     private Map<String, String> headers;

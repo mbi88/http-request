@@ -192,7 +192,7 @@ public class HttpRequestTest {
                     .get("https://google.com");
             passed = true;
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("Expected status code <404> but was <200>"));
+            assertTrue(error.getMessage().contains("expected [404] but found [200]"));
             passed = false;
         }
 

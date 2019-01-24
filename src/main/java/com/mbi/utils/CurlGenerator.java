@@ -1,10 +1,8 @@
 package com.mbi.utils;
 
-import com.mbi.config.Configurator;
+import com.mbi.config.RequestConfig;
 import io.restassured.http.Header;
-import io.restassured.specification.FilterableRequestSpecification;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,9 +10,9 @@ import java.util.List;
  */
 public final class CurlGenerator {
 
-    private final Configurator config;
+    private final RequestConfig config;
 
-    public CurlGenerator(final Configurator config) {
+    public CurlGenerator(final RequestConfig config) {
         this.config = config;
     }
 
@@ -37,8 +35,7 @@ public final class CurlGenerator {
     private String getHeaders() {
         String headersStr = "";
 
-        final FilterableRequestSpecification spec = (FilterableRequestSpecification) config.getSpec();
-        final List<Header> headers = new ArrayList<>(spec.getHeaders().asList());
+        final List<Header> headers = config.getHeaders();
         for (Header header : headers) {
             headersStr = headersStr
                     .concat(" -H")
@@ -51,9 +48,8 @@ public final class CurlGenerator {
     private String getData() {
         String data = "";
 
-        final FilterableRequestSpecification spec = (FilterableRequestSpecification) config.getSpec();
-        if (spec.getBody() != null) {
-            data = String.format(" --data '%s'", spec.getBody().toString());
+        if (config.getData() != null) {
+            data = String.format(" --data '%s'", config.getData().toString());
         }
 
         return data;
