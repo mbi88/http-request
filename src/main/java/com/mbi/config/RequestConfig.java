@@ -1,5 +1,6 @@
 package com.mbi.config;
 
+import com.google.gson.Gson;
 import io.restassured.http.Header;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
@@ -14,7 +15,7 @@ public class RequestConfig {
     private Method method;
     private String url;
     private Object data;
-    private RequestSpecification requestSpecification;
+    private transient RequestSpecification requestSpecification;
     private List<Header> headers;
     private Integer expectedStatusCode;
     private Object[] pathParams;
@@ -91,5 +92,10 @@ public class RequestConfig {
 
     public void setDebug(final boolean debug) {
         this.debug = debug;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

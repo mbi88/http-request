@@ -19,7 +19,7 @@ import java.util.Objects;
  * May create memory leak.
  */
 @SuppressWarnings("PMD.LinguisticNaming")
-public final class RequestBuilder implements HttpRequest, Resettable {
+public final class RequestBuilder implements HttpRequest, Performable {
 
     private final ThreadLocal<String> urlThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Method> methodsThreadLocal = new ThreadLocal<>();
@@ -148,7 +148,8 @@ public final class RequestBuilder implements HttpRequest, Resettable {
         requestDirector.constructRequest();
 
         final HttpRequestPerformer httpRequest = new HttpRequestPerformer();
-        httpRequest.setRequestListener(this::reset);
+        httpRequest.addRequestListener(httpRequest::onRequest);
+        httpRequest.addRequestListener(this::onRequest);
 
         return httpRequest.request(requestDirector.getRequestConfig());
     }
@@ -182,7 +183,7 @@ public final class RequestBuilder implements HttpRequest, Resettable {
      * Resets builder after request invocation.
      */
     @Override
-    public void reset() {
+    public void onRequest() {
         setUrl(null);
         setData(null);
         setExpectedStatusCode(null);

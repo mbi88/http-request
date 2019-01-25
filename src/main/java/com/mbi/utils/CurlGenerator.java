@@ -8,11 +8,11 @@ import java.util.List;
 /**
  * Generates a curl.
  */
-public final class CurlGenerator {
+final class CurlGenerator {
 
     private final RequestConfig config;
 
-    public CurlGenerator(final RequestConfig config) {
+    CurlGenerator(final RequestConfig config) {
         this.config = config;
     }
 

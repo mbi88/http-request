@@ -1,6 +1,9 @@
 package com.mbi.utils;
 
 
+import com.mbi.config.RequestConfig;
+import io.restassured.response.Response;
+
 /**
  * Composes error message on request failure.
  */
@@ -12,17 +15,12 @@ public final class MessageComposer {
     private final String request;
     private final int responseLength;
 
-    public MessageComposer(
-            final String error,
-            final String url,
-            final String response,
-            final String curl,
-            final int responseLength) {
-        this.error = error;
-        this.url = String.format("%nUrl: %s", url);
-        this.response = String.format("%n%nResponse: %s%n", response);
-        this.request = String.format("%n%nRequest: %s%n%n", curl);
-        this.responseLength = responseLength;
+    public MessageComposer(final AssertionError error, final RequestConfig config, final Response response) {
+        this.error = error.getMessage();
+        this.url = String.format("%nUrl: %s", config.getUrl());
+        this.response = String.format("%n%nResponse: %s%n", response.asString());
+        this.request = String.format("%n%nRequest: %s%n%n", new CurlGenerator(config).getCurl());
+        this.responseLength = config.getMaxResponseLength();
     }
 
     public String composeMessage() {
