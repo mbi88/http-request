@@ -64,7 +64,7 @@ artifacts {
 quality {
     checkstyle = true
     pmd = true
-    findbugs = true
+    findbugs = false
     codenarc = true
     spotbugs = false
 }
