@@ -1,3 +1,4 @@
+import com.damnhandy.uri.template.UriTemplate;
 import com.mbi.HttpRequest;
 import com.mbi.config.Header;
 import com.mbi.config.RequestConfig;
@@ -14,6 +15,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -399,5 +401,15 @@ public class HttpRequestTest {
         Response r = http.get("http://www.mocky.io/v2/{id}", "5ab8a4952c00005700186093");
         r.print();
         assertTrue(r.toString().contains("\"a\": 1"), r.toString());
+    }
+
+    @Test
+    void testUriTemplate() {
+        String a = "https://asd.{dd}";
+
+
+        System.out.println(Arrays.toString(UriTemplate.fromTemplate(a).getVariables()));
+
+        System.out.println(UriTemplate.fromTemplate(a).set("dd", "com").expand());
     }
 }
