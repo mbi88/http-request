@@ -1,9 +1,6 @@
 package com.mbi.config;
 
 import com.google.gson.Gson;
-import io.restassured.http.Header;
-import io.restassured.http.Method;
-import io.restassured.specification.RequestSpecification;
 
 import java.util.List;
 
@@ -15,12 +12,12 @@ public class RequestConfig {
     private Method method;
     private String url;
     private Object data;
-    private transient RequestSpecification requestSpecification;
     private List<Header> headers;
     private Integer expectedStatusCode;
     private Object[] pathParams;
-    private int maxResponseLength;
-    private boolean debug;
+    private Integer maxResponseLength;
+    private Boolean debug;
+    private Integer requestTimeOut;
 
     public Method getMethod() {
         return method;
@@ -28,14 +25,6 @@ public class RequestConfig {
 
     public void setMethod(final Method method) {
         this.method = method;
-    }
-
-    public RequestSpecification getRequestSpecification() {
-        return requestSpecification;
-    }
-
-    public void setRequestSpecification(final RequestSpecification requestSpecification) {
-        this.requestSpecification = requestSpecification;
     }
 
     public String getUrl() {
@@ -71,27 +60,35 @@ public class RequestConfig {
     }
 
     public Object[] getPathParams() {
-        return pathParams.clone();
+        return pathParams;
     }
 
     public void setPathParams(final Object... pathParams) {
         this.pathParams = pathParams;
     }
 
-    public int getMaxResponseLength() {
+    public Integer getMaxResponseLength() {
         return maxResponseLength;
     }
 
-    public void setMaxResponseLength(final int maxResponseLength) {
+    public void setMaxResponseLength(final Integer maxResponseLength) {
         this.maxResponseLength = maxResponseLength;
     }
 
-    public boolean isDebug() {
+    public Boolean isDebug() {
         return debug;
     }
 
-    public void setDebug(final boolean debug) {
+    public void setDebug(final Boolean debug) {
         this.debug = debug;
+    }
+
+    public Integer getRequestTimeOut() {
+        return requestTimeOut;
+    }
+
+    public void setRequestTimeOut(final Integer requestTimeOut) {
+        this.requestTimeOut = requestTimeOut;
     }
 
     @Override

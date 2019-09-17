@@ -1,11 +1,11 @@
 package com.mbi.request;
 
 import com.mbi.HttpRequest;
+import com.mbi.config.Header;
+import com.mbi.config.Method;
+import com.mbi.config.RequestConfig;
 import com.mbi.config.RequestDirector;
-import io.restassured.http.Header;
-import io.restassured.http.Method;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import com.mbi.response.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Objects;
  * May create memory leak.
  */
 @SuppressWarnings("PMD.LinguisticNaming")
-public final class RequestBuilder implements HttpRequest, Performable {
+public class RequestBuilder implements HttpRequest, Performable {
 
     private final ThreadLocal<String> urlThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Method> methodsThreadLocal = new ThreadLocal<>();
@@ -27,7 +27,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
     private final ThreadLocal<Integer> statusCodeThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<String> tokenThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<List<Header>> headersThreadLocal = new ThreadLocal<>();
-    private final ThreadLocal<RequestSpecification> specificationThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<RequestConfig> configThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Boolean> debugThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Object[]> pathParamsThreadLocal = new ThreadLocal<>();
 
@@ -80,13 +80,13 @@ public final class RequestBuilder implements HttpRequest, Performable {
     }
 
     @Override
-    public HttpRequest setRequestSpecification(final RequestSpecification specification) {
-        specificationThreadLocal.set(specification);
+    public HttpRequest setConfig(final RequestConfig config) {
+        configThreadLocal.set(config);
         return this;
     }
 
-    public RequestSpecification getSpecification() {
-        return specificationThreadLocal.get();
+    public RequestConfig getConfig() {
+        return configThreadLocal.get();
     }
 
     @Override
@@ -190,7 +190,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
         setToken(null);
         setHeaders(null);
         setMethod(null);
-        setRequestSpecification(null);
+        setConfig(null);
         debug(false);
     }
 }

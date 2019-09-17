@@ -1,19 +1,18 @@
 package com.mbi.config;
 
 import com.mbi.request.RequestBuilder;
-import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.http.Header;
-import io.restassured.specification.FilterableRequestSpecification;
-import io.restassured.specification.RequestSpecification;
+import org.modelmapper.Conditions;
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-
-import static io.restassured.RestAssured.given;
+import java.util.stream.Collectors;
 
 /**
  * Configures request.
@@ -22,11 +21,13 @@ public class RequestDirector {
 
     private final RequestBuilder requestBuilder;
     private final YamlConfiguration yamlConfiguration;
-    private final RequestConfig requestConfig = new RequestConfig();
+    private RequestConfig requestConfig = new RequestConfig();
 
     public RequestDirector(final RequestBuilder requestBuilder) {
         this.requestBuilder = requestBuilder;
-        yamlConfiguration = readYamlConfiguration();
+
+        final var inputStream = getClass().getClassLoader().getResourceAsStream("http-request.yml");
+        yamlConfiguration = readYamlConfiguration(inputStream);
     }
 
     public RequestConfig getRequestConfig() {
@@ -34,35 +35,74 @@ public class RequestDirector {
     }
 
     public void constructRequest() {
-        final RequestSpecification spec = configureRequest();
+        var modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.getConfiguration().setCollectionsMergeEnabled(false);
 
-        requestConfig.setRequestSpecification(spec);
-        requestConfig.setMethod(requestBuilder.getMethod());
-        requestConfig.setUrl(requestBuilder.getUrl());
-        requestConfig.setData(((FilterableRequestSpecification) spec).getBody());
-        requestConfig.setHeaders(new ArrayList<>(((FilterableRequestSpecification) spec).getHeaders().asList()));
-        requestConfig.setExpectedStatusCode(requestBuilder.getStatusCode());
-        requestConfig.setPathParams(requestBuilder.getPathParams());
-        requestConfig.setDebug(requestBuilder.getDebug());
-        requestConfig.setMaxResponseLength(getMaxResponseLength());
+        // load values from config file
+        requestConfig = setValuesFromConfigFile();
+        System.out.println(requestConfig.toString());
+
+        // set values from passed configuration
+        if (requestBuilder.getConfig() != null) {
+            modelMapper.map(setValuesFromConfigObject(), requestConfig);
+            System.out.println(requestConfig.toString());
+        }
+
+        // set values from passed arguments
+        modelMapper.map(setValuesFromBuilder(), requestConfig);
+        setToken();
+        System.out.println(requestConfig.toString());
     }
 
-    private RequestSpecification configureRequest() {
-        final RequestSpecification spec = given();
+    protected RequestConfig setValuesFromConfigFile() {
+        final var modelMapper = new ModelMapper();
 
-        setDefaultHeaders(spec);
-        setRequestTimeout(spec);
-        setSpecification(spec);
-        setToken(spec);
-        setData(spec);
-        appendHeaders(spec);
-        setDebug(spec);
+        var propertyMap = new PropertyMap<YamlConfiguration, RequestConfig>() {
+            @Override
+            protected void configure() {
+                // Map headers
+                modelMapper.createTypeMap(Map.class, List.class)
+                        .setConverter(ctx -> {
+                            if (ctx.getSource() == null) {
+                                return new ArrayList();
+                            }
+                            var map = (Map<String, String>) ctx.getSource();
+                            return map.entrySet().stream().map(entry -> new Header(entry.getKey(), entry.getValue()))
+                                    .collect(Collectors.toList());
+                        });
 
-        return spec;
+                // Map response length
+                Converter<Integer, Integer> responseConverter = ctx -> ctx.getSource() == null ? 0 : ctx.getSource();
+                using(responseConverter).map().setMaxResponseLength(source.getMaxResponseLength());
+
+                // Map timeout
+                map().setRequestTimeOut(source.getConnectionTimeout());
+            }
+        };
+
+        return modelMapper.addMappings(propertyMap).map(yamlConfiguration);
     }
 
-    private YamlConfiguration readYamlConfiguration() {
-        final InputStream in = getClass().getClassLoader().getResourceAsStream("http-request.yml");
+    protected RequestConfig setValuesFromConfigObject() {
+        return new ModelMapper().map(requestBuilder.getConfig(), RequestConfig.class);
+    }
+
+    protected RequestConfig setValuesFromBuilder() {
+        var modelMapper = new ModelMapper();
+
+        var propertyMap = new PropertyMap<RequestBuilder, RequestConfig>() {
+
+            @Override
+            protected void configure() {
+                map().setExpectedStatusCode(source.getStatusCode());
+            }
+        };
+
+        return modelMapper.addMappings(propertyMap).map(requestBuilder);
+    }
+
+    protected YamlConfiguration readYamlConfiguration(final InputStream in) {
         if (Objects.isNull(in)) {
             return new YamlConfiguration();
         }
@@ -70,56 +110,11 @@ public class RequestDirector {
         return new Yaml().loadAs(in, YamlConfiguration.class);
     }
 
-    private void setDefaultHeaders(final RequestSpecification spec) {
-        if (!Objects.isNull(yamlConfiguration.getHeaders())) {
-            spec.headers(yamlConfiguration.getHeaders());
-        }
-    }
-
-    private void setRequestTimeout(final RequestSpecification spec) {
-        if (!Objects.isNull(yamlConfiguration.getConnectionTimeout())) {
-            final RestAssuredConfig config = RestAssured.config().httpClient(HttpClientConfig.httpClientConfig()
-                    .setParam("http.connection.timeout", yamlConfiguration.getConnectionTimeout())
-                    .setParam("http.socket.timeout", yamlConfiguration.getConnectionTimeout()));
-            spec.config(config);
-        }
-    }
-
-    private void setSpecification(final RequestSpecification spec) {
-        if (requestBuilder.getSpecification() != null) {
-            spec.spec(requestBuilder.getSpecification());
-        }
-    }
-
-    private void setToken(final RequestSpecification spec) {
+    private void setToken() {
         if (requestBuilder.getToken() != null) {
-            spec.header("Authorization", requestBuilder.getToken());
+            var headers = requestBuilder.getHeaders() == null ? new ArrayList<Header>() : requestBuilder.getHeaders();
+            headers.add(new Header("Authorization", requestBuilder.getToken()));
+            requestConfig.setHeaders(headers);
         }
-    }
-
-    private void setData(final RequestSpecification spec) {
-        if (requestBuilder.getData() != null) {
-            spec.body(requestBuilder.getData().toString());
-        }
-    }
-
-    private void appendHeaders(final RequestSpecification spec) {
-        if (requestBuilder.getHeaders() != null) {
-            for (Header header : requestBuilder.getHeaders()) {
-                spec.header(header);
-            }
-        }
-    }
-
-    private void setDebug(final RequestSpecification spec) {
-        if (requestBuilder.getDebug()) {
-            spec.log().everything();
-        }
-    }
-
-    private int getMaxResponseLength() {
-        return (!Objects.isNull(yamlConfiguration.getMaxResponseLength()))
-                ? yamlConfiguration.getMaxResponseLength()
-                : 0;
     }
 }

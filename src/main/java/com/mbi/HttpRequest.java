@@ -1,8 +1,8 @@
 package com.mbi;
 
-import io.restassured.http.Header;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import com.mbi.config.Header;
+import com.mbi.config.RequestConfig;
+import com.mbi.response.Response;
 
 import java.util.List;
 
@@ -57,12 +57,12 @@ public interface HttpRequest {
     HttpRequest setExpectedStatusCode(Integer code);
 
     /**
-     * Sets custom request specification.
+     * Sets request configuration.
      *
-     * @param specification request specification.
+     * @param config request configuration.
      * @return HttpRequest.
      */
-    HttpRequest setRequestSpecification(RequestSpecification specification);
+    HttpRequest setConfig(RequestConfig config);
 
     /**
      * Sets request url.
