@@ -15,7 +15,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -399,17 +398,17 @@ public class HttpRequestTest {
     @Test
     void testPathParams() {
         Response r = http.get("http://www.mocky.io/v2/{id}", "5ab8a4952c00005700186093");
-        r.print();
-        assertTrue(r.toString().contains("\"a\": 1"), r.toString());
+
+        assertTrue(r.toJson().similar(new JSONObject().put("a", 1)));
     }
 
     @Test
     void testUriTemplate() {
-        String a = "https://asd.{dd}";
+        String a = "http://www.mocky.io/v2/{id}/sss/{sss}";
+        String[] b = new String[]{"1", "5 2"};
 
+//        System.out.println(buildPathParams(a, b));
 
-        System.out.println(Arrays.toString(UriTemplate.fromTemplate(a).getVariables()));
-
-        System.out.println(UriTemplate.fromTemplate(a).set("dd", "com").expand());
     }
+
 }

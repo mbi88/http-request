@@ -1,15 +1,16 @@
 package com.mbi.response;
 
+import com.mbi.config.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Map;
+import java.util.List;
 
 public class Response {
 
     private Object body;
     private Integer statusCode;
-    private Map<String, String> headers;
+    private List<Header> headers;
 
     public Object getBody() {
         return body;
@@ -27,28 +28,28 @@ public class Response {
         this.statusCode = statusCode;
     }
 
-    public Map<String, String> getHeaders() {
+    public List<Header> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(final Map<String, String> headers) {
+    public void setHeaders(final List<Header> headers) {
         this.headers = headers;
     }
 
     public JSONObject toJson() {
-        return new JSONObject();
+        return new JSONObject(getBody().toString());
     }
 
     public JSONArray toJsonArray() {
-        return new JSONArray();
+        return new JSONArray(getBody().toString());
     }
 
     public void print() {
-        System.out.println(this.toString());
+        System.out.println(getBody().toString());
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return getBody().toString();
     }
 }

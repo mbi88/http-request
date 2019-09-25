@@ -41,7 +41,6 @@ public class RequestDirector {
 
         // load values from config file
         requestConfig = setValuesFromConfigFile();
-        System.out.println(requestConfig.toString());
 
         // set values from passed configuration
         if (requestBuilder.getConfig() != null) {
@@ -52,7 +51,6 @@ public class RequestDirector {
         // set values from passed arguments
         modelMapper.map(setValuesFromBuilder(), requestConfig);
         setToken();
-        System.out.println(requestConfig.toString());
     }
 
     protected RequestConfig setValuesFromConfigFile() {
@@ -62,15 +60,15 @@ public class RequestDirector {
             @Override
             protected void configure() {
                 // Map headers
-                modelMapper.createTypeMap(Map.class, List.class)
-                        .setConverter(ctx -> {
-                            if (ctx.getSource() == null) {
-                                return new ArrayList();
-                            }
-                            var map = (Map<String, String>) ctx.getSource();
-                            return map.entrySet().stream().map(entry -> new Header(entry.getKey(), entry.getValue()))
-                                    .collect(Collectors.toList());
-                        });
+                Converter<Map<String, String>, List<Header>> headersConverter = ctx -> {
+                    if (ctx.getSource() == null) {
+                        return new ArrayList<>();
+                    }
+                    return ctx.getSource().entrySet().stream()
+                            .map(entry -> new Header(entry.getKey(), entry.getValue()))
+                            .collect(Collectors.toList());
+                };
+                using(headersConverter).map(source.getHeaders()).setHeaders(null);
 
                 // Map response length
                 Converter<Integer, Integer> responseConverter = ctx -> ctx.getSource() == null ? 0 : ctx.getSource();
