@@ -8,10 +8,7 @@ import org.modelmapper.PropertyMap;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,22 +16,13 @@ import java.util.stream.Collectors;
  */
 public class RequestDirector {
 
-    private final RequestBuilder requestBuilder;
-    private final YamlConfiguration yamlConfiguration;
     private RequestConfig requestConfig = new RequestConfig();
-
-    public RequestDirector(final RequestBuilder requestBuilder) {
-        this.requestBuilder = requestBuilder;
-
-        final var inputStream = getClass().getClassLoader().getResourceAsStream("http-request.yml");
-        yamlConfiguration = readYamlConfiguration(inputStream);
-    }
 
     public RequestConfig getRequestConfig() {
         return this.requestConfig;
     }
 
-    public void constructRequest() {
+    public void constructRequest(final RequestBuilder requestBuilder) {
         var modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         modelMapper.getConfiguration().setCollectionsMergeEnabled(false);
@@ -44,13 +32,15 @@ public class RequestDirector {
 
         // set values from passed configuration
         if (requestBuilder.getConfig() != null) {
-            modelMapper.map(setValuesFromConfigObject(), requestConfig);
-            System.out.println(requestConfig.toString());
+            modelMapper.map(setValuesFromConfigObject(requestBuilder.getConfig()), requestConfig);
         }
 
         // set values from passed arguments
-        modelMapper.map(setValuesFromBuilder(), requestConfig);
-        setToken();
+        var argumentsConfig = setValuesFromBuilder(requestBuilder);
+        // Merge headers
+        argumentsConfig.getHeaders().addAll(requestConfig.getHeaders());
+        modelMapper.map(argumentsConfig, requestConfig);
+        setToken(requestBuilder);
     }
 
     protected RequestConfig setValuesFromConfigFile() {
@@ -79,14 +69,17 @@ public class RequestDirector {
             }
         };
 
+        final var inputStream = getClass().getClassLoader().getResourceAsStream("http-request.yml");
+        final var yamlConfiguration = readYamlConfiguration(inputStream);
+
         return modelMapper.addMappings(propertyMap).map(yamlConfiguration);
     }
 
-    protected RequestConfig setValuesFromConfigObject() {
-        return new ModelMapper().map(requestBuilder.getConfig(), RequestConfig.class);
+    protected RequestConfig setValuesFromConfigObject(final RequestConfig config) {
+        return new ModelMapper().map(config, RequestConfig.class);
     }
 
-    protected RequestConfig setValuesFromBuilder() {
+    protected RequestConfig setValuesFromBuilder(final RequestBuilder requestBuilder) {
         var modelMapper = new ModelMapper();
 
         var propertyMap = new PropertyMap<RequestBuilder, RequestConfig>() {
@@ -108,7 +101,7 @@ public class RequestDirector {
         return new Yaml().loadAs(in, YamlConfiguration.class);
     }
 
-    private void setToken() {
+    private void setToken(final RequestBuilder requestBuilder) {
         if (requestBuilder.getToken() != null) {
             var headers = requestBuilder.getHeaders() == null ? new ArrayList<Header>() : requestBuilder.getHeaders();
             headers.add(new Header("Authorization", requestBuilder.getToken()));

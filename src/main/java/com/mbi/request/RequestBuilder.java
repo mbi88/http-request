@@ -144,8 +144,8 @@ public class RequestBuilder implements HttpRequest, Performable {
         setMethod(method);
         setPathParams(pathParams);
 
-        final RequestDirector requestDirector = new RequestDirector(this);
-        requestDirector.constructRequest();
+        final RequestDirector requestDirector = new RequestDirector();
+        requestDirector.constructRequest(this);
 
         final HttpRequestPerformer httpRequest = new HttpRequestPerformer();
         httpRequest.addRequestListener(httpRequest::onRequest);
