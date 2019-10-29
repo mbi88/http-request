@@ -16,7 +16,6 @@ public class RequestConfig {
     private Integer expectedStatusCode;
     private Object[] pathParams;
     private Integer maxResponseLength;
-    private Boolean debug;
     private Integer requestTimeOut;
 
     public Method getMethod() {
@@ -73,14 +72,6 @@ public class RequestConfig {
 
     public void setMaxResponseLength(final Integer maxResponseLength) {
         this.maxResponseLength = maxResponseLength;
-    }
-
-    public Boolean isDebug() {
-        return debug;
-    }
-
-    public void setDebug(final Boolean debug) {
-        this.debug = debug;
     }
 
     public Integer getRequestTimeOut() {

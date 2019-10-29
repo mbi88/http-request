@@ -7,9 +7,17 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
-import java.util.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Configures request.
@@ -17,6 +25,15 @@ import java.util.stream.Collectors;
 public class RequestDirector {
 
     private RequestConfig requestConfig = new RequestConfig();
+    private String yamlData;
+
+    public RequestDirector() {
+        setYamlData(getDataFromYamlFile("http-request.yml"));
+    }
+
+    protected void setYamlData(String yamlData) {
+        this.yamlData = yamlData;
+    }
 
     public RequestConfig getRequestConfig() {
         return this.requestConfig;
@@ -38,7 +55,9 @@ public class RequestDirector {
         // set values from passed arguments
         var argumentsConfig = setValuesFromBuilder(requestBuilder);
         // Merge headers
-        argumentsConfig.getHeaders().addAll(requestConfig.getHeaders());
+        if (Objects.nonNull(argumentsConfig.getHeaders())) {
+            argumentsConfig.getHeaders().addAll(requestConfig.getHeaders());
+        }
         modelMapper.map(argumentsConfig, requestConfig);
         setToken(requestBuilder);
     }
@@ -69,10 +88,22 @@ public class RequestDirector {
             }
         };
 
-        final var inputStream = getClass().getClassLoader().getResourceAsStream("http-request.yml");
-        final var yamlConfiguration = readYamlConfiguration(inputStream);
+        final var yamlConfiguration = readYamlConfiguration(yamlData);
 
         return modelMapper.addMappings(propertyMap).map(yamlConfiguration);
+    }
+
+    protected String getDataFromYamlFile(final String fileName) {
+        Stream<String> lines = null;
+        try {
+            final Path path = Paths.get(Objects
+                    .requireNonNull(getClass().getClassLoader().getResource(fileName)).toURI());
+            lines = Files.lines(path);
+        } catch (IOException | URISyntaxException ignored) {
+            // ignored
+        }
+
+        return Objects.requireNonNull(lines).collect(Collectors.joining("\n"));
     }
 
     protected RequestConfig setValuesFromConfigObject(final RequestConfig config) {
@@ -93,7 +124,7 @@ public class RequestDirector {
         return modelMapper.addMappings(propertyMap).map(requestBuilder);
     }
 
-    protected YamlConfiguration readYamlConfiguration(final InputStream in) {
+    protected YamlConfiguration readYamlConfiguration(final String in) {
         if (Objects.isNull(in)) {
             return new YamlConfiguration();
         }

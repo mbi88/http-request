@@ -28,7 +28,6 @@ public class RequestBuilder implements HttpRequest, Performable {
     private final ThreadLocal<String> tokenThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<List<Header>> headersThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<RequestConfig> configThreadLocal = new ThreadLocal<>();
-    private final ThreadLocal<Boolean> debugThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Object[]> pathParamsThreadLocal = new ThreadLocal<>();
 
     @Override
@@ -97,21 +96,6 @@ public class RequestBuilder implements HttpRequest, Performable {
 
     public String getUrl() {
         return urlThreadLocal.get();
-    }
-
-    public Boolean getDebug() {
-        return !Objects.isNull(debugThreadLocal.get()) && !debugThreadLocal.get().equals(false);
-    }
-
-    @Override
-    public HttpRequest debug() {
-        debugThreadLocal.set(true);
-        return this;
-    }
-
-    private HttpRequest debug(final boolean isDebug) {
-        debugThreadLocal.set(isDebug);
-        return this;
     }
 
     public Method getMethod() {
@@ -191,6 +175,5 @@ public class RequestBuilder implements HttpRequest, Performable {
         setHeaders(null);
         setMethod(null);
         setConfig(null);
-        debug(false);
     }
 }

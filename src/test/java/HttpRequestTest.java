@@ -1,4 +1,3 @@
-import com.damnhandy.uri.template.UriTemplate;
 import com.mbi.HttpRequest;
 import com.mbi.config.Header;
 import com.mbi.config.RequestConfig;
@@ -371,28 +370,6 @@ public class HttpRequestTest {
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("URI with undefined scheme"));
         }
-    }
-
-    @Test
-    void testDebugTrue() {
-        RequestBuilder b1 = new RequestBuilder();
-        b1
-                .debug()
-                .setUrl("https://google.com");
-
-        assertTrue(b1.getDebug());
-    }
-
-    @Test
-    void testDebugFalse() {
-        RequestBuilder b1 = new RequestBuilder();
-        b1.debug().get("https://google.com");
-
-        RequestBuilder b2 = new RequestBuilder();
-        b2.setUrl("https://google.com");
-
-        assertFalse(b1.getDebug());
-        assertFalse(b2.getDebug());
     }
 
     @Test
