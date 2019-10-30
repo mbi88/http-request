@@ -4,7 +4,9 @@ import com.mbi.request.RequestBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.error.YAMLException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -102,5 +104,36 @@ class YamlConfigTest {
                 .put("headers", new JSONArray());
 
         assertTrue(expected.similar(actual));
+    }
+
+    @Test
+    void testGetNullPointerExceptionIfFileIsEmpty() {
+        var requestDirector = new RequestDirector();
+
+        var data = requestDirector.getDataFromYamlFile("empty.yml");
+        requestDirector.setYamlData(data);
+
+        boolean failed = true;
+        try {
+            requestDirector.constructRequest(new RequestBuilder());
+            failed = false;
+        } catch (NullPointerException n) {
+            assertTrue(failed);
+        }
+    }
+
+    @Test
+    void testCantLoadFileWithUnexpectedFields() {
+        var requestDirector = new RequestDirector();
+
+        var data = requestDirector.getDataFromYamlFile("invalid.yml");
+        requestDirector.setYamlData(data);
+
+        try {
+            requestDirector.constructRequest(new RequestBuilder());
+        } catch (YAMLException y) {
+            assertEquals(y.getCause().getMessage(),
+                    "Unable to find property 'a' on class: com.mbi.config.YamlConfiguration");
+        }
     }
 }

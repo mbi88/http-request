@@ -31,10 +31,6 @@ public class RequestDirector {
         setYamlData(getDataFromYamlFile("http-request.yml"));
     }
 
-    protected void setYamlData(String yamlData) {
-        this.yamlData = yamlData;
-    }
-
     public RequestConfig getRequestConfig() {
         return this.requestConfig;
     }
@@ -90,20 +86,7 @@ public class RequestDirector {
 
         final var yamlConfiguration = readYamlConfiguration(yamlData);
 
-        return modelMapper.addMappings(propertyMap).map(yamlConfiguration);
-    }
-
-    protected String getDataFromYamlFile(final String fileName) {
-        Stream<String> lines = null;
-        try {
-            final Path path = Paths.get(Objects
-                    .requireNonNull(getClass().getClassLoader().getResource(fileName)).toURI());
-            lines = Files.lines(path);
-        } catch (IOException | URISyntaxException ignored) {
-            // ignored
-        }
-
-        return Objects.requireNonNull(lines).collect(Collectors.joining("\n"));
+        return modelMapper.addMappings(propertyMap).map(Objects.requireNonNull(yamlConfiguration));
     }
 
     protected RequestConfig setValuesFromConfigObject(final RequestConfig config) {
@@ -124,12 +107,29 @@ public class RequestDirector {
         return modelMapper.addMappings(propertyMap).map(requestBuilder);
     }
 
+    protected String getDataFromYamlFile(final String fileName) {
+        Stream<String> lines = null;
+        try {
+            final Path path = Paths.get(Objects
+                    .requireNonNull(getClass().getClassLoader().getResource(fileName)).toURI());
+            lines = Files.lines(path);
+        } catch (IOException | URISyntaxException ignored) {
+            // ignored
+        }
+
+        return Objects.requireNonNull(lines).collect(Collectors.joining("\n"));
+    }
+
     protected YamlConfiguration readYamlConfiguration(final String in) {
         if (Objects.isNull(in)) {
             return new YamlConfiguration();
         }
 
         return new Yaml().loadAs(in, YamlConfiguration.class);
+    }
+
+    protected void setYamlData(String yamlData) {
+        this.yamlData = yamlData;
     }
 
     private void setToken(final RequestBuilder requestBuilder) {
