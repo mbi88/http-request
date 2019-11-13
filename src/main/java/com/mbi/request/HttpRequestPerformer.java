@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 /**
  * Performs request.
@@ -43,6 +44,29 @@ final class HttpRequestPerformer implements Performable {
     }
 
     /**
+     * Check if response has 'errors' array.
+     *
+     * @param response response of a request.
+     * @param config   request configuration.
+     * @throws AssertionError if actual response has 'errors' array.
+     */
+    private void checkNoErrors(final Response response, final RequestConfig config) {
+        // No need to check errors code if flag not set
+        if (Objects.isNull(config.isCheckNoErrors()) || !config.isCheckNoErrors()) {
+            return;
+        }
+
+        final boolean hasErrors = response.body().jsonPath().getList("errors") != null;
+
+        try {
+            assertFalse(hasErrors, "Response has errors!");
+        } catch (AssertionError assertionError) {
+            final String msg = new MessageComposer(assertionError, config, response).composeMessage();
+            throw new AssertionError(msg, assertionError);
+        }
+    }
+
+    /**
      * Performs request. Compares status code with expected. Finally resets request builder to default.
      *
      * @param requestConfig request configuration.
@@ -56,6 +80,7 @@ final class HttpRequestPerformer implements Performable {
                     .getRequestSpecification()
                     .request(requestConfig.getMethod(), requestConfig.getUrl(), requestConfig.getPathParams());
             checkStatusCode(response, requestConfig);
+            checkNoErrors(response, requestConfig);
         } finally {
             requestListeners.forEach(OnRequestPerformedListener::onRequestPerformed);
         }

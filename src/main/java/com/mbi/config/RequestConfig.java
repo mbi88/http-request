@@ -21,6 +21,7 @@ public class RequestConfig {
     private Object[] pathParams;
     private int maxResponseLength;
     private boolean debug;
+    private Boolean checkNoErrors;
 
     public Method getMethod() {
         return method;
@@ -92,6 +93,14 @@ public class RequestConfig {
 
     public void setDebug(final boolean debug) {
         this.debug = debug;
+    }
+
+    public Boolean isCheckNoErrors() {
+        return checkNoErrors;
+    }
+
+    public void setCheckNoErrors(final Boolean checkNoErrors) {
+        this.checkNoErrors = checkNoErrors;
     }
 
     @Override

@@ -30,6 +30,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
     private final ThreadLocal<RequestSpecification> specificationThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Boolean> debugThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Object[]> pathParamsThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<Boolean> checkNoErrorsThreadLocal = new ThreadLocal<>();
 
     @Override
     public HttpRequest setHeader(final String header, final String value) {
@@ -73,6 +74,16 @@ public final class RequestBuilder implements HttpRequest, Performable {
     public HttpRequest setExpectedStatusCode(final Integer statusCode) {
         statusCodeThreadLocal.set(statusCode);
         return this;
+    }
+
+    @Override
+    public HttpRequest checkNoErrors(final Boolean noErrors) {
+        checkNoErrorsThreadLocal.set(noErrors);
+        return this;
+    }
+
+    public Boolean getNoErrors() {
+        return checkNoErrorsThreadLocal.get();
     }
 
     public Integer getStatusCode() {
@@ -192,5 +203,6 @@ public final class RequestBuilder implements HttpRequest, Performable {
         setMethod(null);
         setRequestSpecification(null);
         debug(false);
+        checkNoErrors(null);
     }
 }
