@@ -18,3 +18,14 @@ jobs:
         java-version: 12
     - name: Build with Gradle
       run: ./gradlew clean build jacocoTestReport
+  
+  send_coverage:
+    
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send coverage
+        run: curl -s https://codecov.io/bash)
+        shell: bash
+    
