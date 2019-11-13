@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/mbi88/http-request.svg?branch=master)](https://travis-ci.org/mbi88/http-request)
+[![Build Status](https://github.com/mbi88/http-request/workflows/Build/badge.svg)](https://github.com/mbi88/http-request/workflows/Build/badge.svg)
 [![codecov](https://codecov.io/gh/mbi88/http-request/branch/master/graph/badge.svg)](https://codecov.io/gh/mbi88/http-request)
 [![](https://jitpack.io/v/mbi88/http-request.svg)](https://jitpack.io/#mbi88/http-request)
 
