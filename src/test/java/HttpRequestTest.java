@@ -356,4 +356,43 @@ public class HttpRequestTest {
 
         assertTrue(r.asString().contains("\"a\": 1"), r.asString());
     }
+
+    @Test
+    public void testCheckErrorsIfErrorsExist() {
+        try {
+            http
+                    .checkNoErrors(true)
+                    .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+        } catch (AssertionError assertionError) {
+            assertTrue(assertionError.getMessage().startsWith("Response has errors!"));
+        }
+    }
+
+    @Test
+    public void testErrorsNotCheckedIfFalse() {
+        http
+                .checkNoErrors(false)
+                .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+    }
+
+
+    @Test
+    public void testErrorsNotCheckedIfNull() {
+        http
+                .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+    }
+
+    @Test
+    public void testNoExceptionIfCheckErrorsTrueAndNoErrorsInResponse() {
+        http
+                .checkNoErrors(true)
+                .get("http://www.mocky.io/v2/5ab8a4952c00005700186093");
+    }
+
+    @Test
+    public void testNoExceptionIfCheckNoErrorsNull() {
+        http
+                .checkNoErrors(false)
+                .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+    }
 }

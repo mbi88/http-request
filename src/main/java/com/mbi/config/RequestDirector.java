@@ -45,6 +45,7 @@ public class RequestDirector {
         requestConfig.setPathParams(requestBuilder.getPathParams());
         requestConfig.setDebug(requestBuilder.getDebug());
         requestConfig.setMaxResponseLength(getMaxResponseLength());
+        requestConfig.setCheckNoErrors(requestBuilder.getNoErrors());
     }
 
     private RequestSpecification configureRequest() {

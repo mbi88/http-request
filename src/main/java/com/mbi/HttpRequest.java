@@ -57,6 +57,14 @@ public interface HttpRequest {
     HttpRequest setExpectedStatusCode(Integer code);
 
     /**
+     * Sets if response should contain 'errors' array.
+     *
+     * @param noErrors errors flag.
+     * @return HttpRequest.
+     */
+    HttpRequest checkNoErrors(Boolean noErrors);
+
+    /**
      * Sets custom request specification.
      *
      * @param specification request specification.
