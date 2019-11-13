@@ -26,6 +26,6 @@ jobs:
     
     steps:
       - name: Send coverage
-        run: curl -s https://codecov.io/bash)
+        run: curl -s https://codecov.io/bash
         shell: bash
     
