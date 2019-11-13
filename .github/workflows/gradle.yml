@@ -23,6 +23,7 @@ jobs:
       run: ./gradlew clean build jacocoTestReport
       
       if: success()
-    - name: Send coverage
-      run:  bash <(curl -s https://codecov.io/bash)
-      shell: bash 
+    - name: Upload coverage to Codecov  
+      uses: codecov/codecov-action@v1.0.3
+      with:
+        token: ${{secrets.CODECOV_TOKEN}}
