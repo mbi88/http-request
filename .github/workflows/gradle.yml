@@ -19,7 +19,7 @@ jobs:
       with:
         java-version: 12
       
-    - name: Build with Gradle
+    - name: Build
       run: ./gradlew clean build jacocoTestReport
       
       if: success()
