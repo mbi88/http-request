@@ -1,8 +1,8 @@
 import groovy.io.FileType
 
-plugins {
-    id 'ru.vyarus.quality' version '3.4.0'
-}
+//plugins {
+//    id 'ru.vyarus.quality' version '3.4.0'
+//}
 
 apply plugin: 'java-library'
 apply plugin: 'maven'
@@ -61,12 +61,12 @@ artifacts {
     archives javadocJar
 }
 
-quality {
-    checkstyle = true
-    pmd = true
-    findbugs = true
-    codenarc = true
-    spotbugs = true
-}
+//quality {
+//    checkstyle = true
+//    pmd = true
+//    findbugs = true
+//    codenarc = true
+//    spotbugs = true
+//}
 
 check.dependsOn jacocoTestReport
