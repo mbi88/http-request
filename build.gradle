@@ -11,7 +11,7 @@ apply plugin: 'jacoco'
 def suitesDir = 'src/test/resources/suites/'
 
 repositories {
-    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url "https://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
@@ -65,7 +65,7 @@ quality {
     checkstyle = true
     pmd = true
     codenarc = true
-    spotbugs = false
+    spotbugs = true
 }
 
 check.dependsOn jacocoTestReport
