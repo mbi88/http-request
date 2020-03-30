@@ -12,10 +12,11 @@ def suitesDir = 'src/test/resources/suites/'
 
 repositories {
     maven { url "https://repo.maven.apache.org/maven2" }
+    jcenter()
 }
 
 dependencies {
-    implementation group: 'org.testng', name: 'testng', version: '7.1.0'
+    implementation group: 'org.testng', name: 'testng', version: '7.2.0'
     implementation group: 'io.rest-assured', name: 'rest-assured', version: '4.3.0'
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.26'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
