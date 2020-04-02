@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,11 +25,17 @@ import java.util.stream.Stream;
  */
 public class RequestDirector {
 
-    private RequestConfig requestConfig = new RequestConfig();
+    private final Function<RequestConfig, List<Header>> extractHeaders = config -> config.getHeaders() == null
+            ? List.of() : config.getHeaders();
+    private final RequestConfig requestConfig = new RequestConfig();
     private String yamlData;
 
     public RequestDirector() {
-        setYamlData(getDataFromYamlFile("http-request.yml"));
+        this("http-request.yml");
+    }
+
+    public RequestDirector(final String ymlConfigFile) {
+        yamlData = getDataFromYamlFile(ymlConfigFile);
     }
 
     public RequestConfig getRequestConfig() {
@@ -36,49 +43,66 @@ public class RequestDirector {
     }
 
     public void constructRequest(final RequestBuilder requestBuilder) {
-        var modelMapper = new ModelMapper();
+        final var modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         modelMapper.getConfiguration().setCollectionsMergeEnabled(false);
 
-        // load values from config file
-        requestConfig = setValuesFromConfigFile();
+        // Load values from yaml config file
+        final var fileConfig = getValuesFromConfigFile();
+        modelMapper.map(fileConfig, requestConfig);
 
-        // set values from passed configuration
+        // Get values from passed request configuration
+        var builderConfig = new RequestConfig();
         if (requestBuilder.getConfig() != null) {
-            modelMapper.map(setValuesFromConfigObject(requestBuilder.getConfig()), requestConfig);
+            builderConfig = getValuesFromConfigObject(requestBuilder.getConfig());
+            modelMapper.map(builderConfig, requestConfig);
         }
 
-        // set values from passed arguments
-        var argumentsConfig = setValuesFromBuilder(requestBuilder);
-        // Merge headers
-        if (Objects.nonNull(argumentsConfig.getHeaders())) {
-            argumentsConfig.getHeaders().addAll(requestConfig.getHeaders());
-        }
+        // Get values from passed arguments
+        final var argumentsConfig = getValuesFromBuilder(requestBuilder);
         modelMapper.map(argumentsConfig, requestConfig);
+
+        // Merge headers
+        requestConfig.setHeaders(mergeHeaders(fileConfig, builderConfig, argumentsConfig));
+
+        // Add authorization
         setToken(requestBuilder);
     }
 
-    protected RequestConfig setValuesFromConfigFile() {
+    private List<Header> mergeHeaders(final RequestConfig fileConfig, final RequestConfig builderConfig,
+                                      final RequestConfig argumentsConfig) {
+        final var fileHeaders = extractHeaders.apply(fileConfig);
+        final var builderHeaders = extractHeaders.apply(builderConfig);
+        final var argHeaders = extractHeaders.apply(argumentsConfig);
+
+        final var headers = new ArrayList<Header>();
+        if (builderHeaders.isEmpty()) {
+            headers.addAll(fileHeaders);
+        }
+        headers.addAll(builderHeaders);
+        headers.addAll(argHeaders);
+
+        return headers;
+    }
+
+    protected RequestConfig getValuesFromConfigFile() {
         final var modelMapper = new ModelMapper();
 
-        var propertyMap = new PropertyMap<YamlConfiguration, RequestConfig>() {
+        final var propertyMap = new PropertyMap<YamlConfiguration, RequestConfig>() {
             @Override
             protected void configure() {
                 // Map headers
-                Converter<Map<String, String>, List<Header>> headersConverter = ctx -> {
+                final Converter<Map<String, String>, List<Header>> headersConverter = ctx -> {
                     if (ctx.getSource() == null) {
                         return new ArrayList<>();
                     }
                     return ctx.getSource().entrySet().stream()
-                            .map(entry -> new Header(entry.getKey(), entry.getValue()))
-                            .collect(Collectors.toList());
+                            .map(entry -> new Header(entry.getKey(), entry.getValue())).collect(Collectors.toList());
                 };
                 using(headersConverter).map(source.getHeaders()).setHeaders(null);
-
                 // Map response length
-                Converter<Integer, Integer> responseConverter = ctx -> ctx.getSource() == null ? 0 : ctx.getSource();
-                using(responseConverter).map().setMaxResponseLength(source.getMaxResponseLength());
-
+                final Converter<Integer, Integer> respConverter = ctx -> ctx.getSource() == null ? 0 : ctx.getSource();
+                using(respConverter).map().setMaxResponseLength(source.getMaxResponseLength());
                 // Map timeout
                 map().setRequestTimeOut(source.getConnectionTimeout());
             }
@@ -89,15 +113,14 @@ public class RequestDirector {
         return modelMapper.addMappings(propertyMap).map(Objects.requireNonNull(yamlConfiguration));
     }
 
-    protected RequestConfig setValuesFromConfigObject(final RequestConfig config) {
+    protected RequestConfig getValuesFromConfigObject(final RequestConfig config) {
         return new ModelMapper().map(config, RequestConfig.class);
     }
 
-    protected RequestConfig setValuesFromBuilder(final RequestBuilder requestBuilder) {
-        var modelMapper = new ModelMapper();
+    protected RequestConfig getValuesFromBuilder(final RequestBuilder requestBuilder) {
+        final var modelMapper = new ModelMapper();
 
-        var propertyMap = new PropertyMap<RequestBuilder, RequestConfig>() {
-
+        final var propertyMap = new PropertyMap<RequestBuilder, RequestConfig>() {
             @Override
             protected void configure() {
                 map().setExpectedStatusCode(source.getStatusCode());
@@ -107,11 +130,15 @@ public class RequestDirector {
         return modelMapper.addMappings(propertyMap).map(requestBuilder);
     }
 
-    protected String getDataFromYamlFile(final String fileName) {
+    private String getDataFromYamlFile(final String fileName) {
+        final var url = getClass().getClassLoader().getResource(fileName);
+        if (Objects.isNull(url)) {
+            return null;
+        }
+
         Stream<String> lines = null;
         try {
-            final Path path = Paths.get(Objects
-                    .requireNonNull(getClass().getClassLoader().getResource(fileName)).toURI());
+            final Path path = Paths.get(Objects.requireNonNull(url).toURI());
             lines = Files.lines(path);
         } catch (IOException | URISyntaxException ignored) {
             // ignored
@@ -128,15 +155,9 @@ public class RequestDirector {
         return new Yaml().loadAs(in, YamlConfiguration.class);
     }
 
-    protected void setYamlData(String yamlData) {
-        this.yamlData = yamlData;
-    }
-
     private void setToken(final RequestBuilder requestBuilder) {
         if (requestBuilder.getToken() != null) {
-            var headers = requestBuilder.getHeaders() == null ? new ArrayList<Header>() : requestBuilder.getHeaders();
-            headers.add(new Header("Authorization", requestBuilder.getToken()));
-            requestConfig.setHeaders(headers);
+            requestConfig.getHeaders().add(new Header("Authorization", requestBuilder.getToken()));
         }
     }
 }

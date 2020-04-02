@@ -1,11 +1,14 @@
 package com.mbi.config;
 
+/**
+ * Header pojo.
+ */
 public class Header {
 
-    private String name;
-    private String value;
+    private final String name;
+    private final String value;
 
-    public Header(String name, String value) {
+    public Header(final String name, final String value) {
         this.name = name;
         this.value = value;
     }

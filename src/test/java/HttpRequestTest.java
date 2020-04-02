@@ -1,12 +1,13 @@
+import com.damnhandy.uri.template.UriTemplate;
 import com.mbi.HttpRequest;
 import com.mbi.config.Header;
 import com.mbi.config.RequestConfig;
 import com.mbi.request.RequestBuilder;
 import com.mbi.response.Response;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,8 +16,9 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.*;
 
 
 public class HttpRequestTest {
@@ -54,23 +56,26 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(300)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("-H 'header1: v' -H 'header2: v'"));
+            assertTrue(error.getMessage().contains("ua' -H 'Accept: application/json' -H 'Content-Type: application/json; "
+                    + "charset=UTF-8' -H 'header1: v' -H 'header2: v'\n"));
         }
     }
 
     @Test
     void testSetHeaders() {
-        List<Header> headers = new ArrayList<>();
+        var headers = new ArrayList<Header>();
         headers.add(new Header("h1", "v"));
         headers.add(new Header("h2", "v"));
 
         try {
             http
                     .setHeaders(headers)
-                    .setExpectedStatusCode(300)
+                    .setExpectedStatusCode(400)
                     .get("http://www.mocky.io/v2/5ab8a4952c00005700186093");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
+            error.printStackTrace();
+            assertTrue(error.getMessage().contains("93' -H 'Accept: application/json' -H 'Content-Type: application/json;"
+                    + " charset=UTF-8' -H 'h1: v' -H 'h2: v'\n"));
         }
     }
 
@@ -81,45 +86,31 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(230)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: application/json'"
+                    + " -H 'Content-Type: application/json; charset=UTF-8'\n"));
         }
     }
 
     @Test
-    void testHeadersWithSpec() {
-        RequestConfig config = new RequestConfig();
-        config.setHeaders(List.of(new Header("h1", "v")));
-
-        try {
-            http
-                    .setConfig(config)
-                    .setExpectedStatusCode(342)
-                    .setHeader("h2", "v")
-                    .get("https://google.com.ua");
-        } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
-        }
-    }
-
-    @Test
-    void testSpecHeaders() {
-        RequestConfig config = new RequestConfig();
-        config.setHeaders(List.of(new Header("h1", "v")));
+    void testConfigHeaders() {
+        var config = new RequestConfig();
+        config.setHeaders(List.of(new Header("config", "v"), new Header("argument", "h")));
 
         try {
             http
                     .setToken("wer")
                     .setConfig(config)
+                    .setHeader("argument", "h")
                     .setExpectedStatusCode(342)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("-H 'h1: v' -H 'Authorization: wer'"));
+            assertTrue(error.getMessage().contains("ua' -H 'config: v' -H 'argument: h' -H 'argument: h' -H 'Authorization: wer'\n"));
         }
     }
 
     @Test
     void testHeadersOverride() {
-        RequestConfig config = new RequestConfig();
+        var config = new RequestConfig();
         config.setHeaders(List.of(new Header("Accept", "1")));
 
         try {
@@ -129,7 +120,7 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(342)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: 2'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: 1' -H 'Accept: 2'"));
         }
     }
 
@@ -138,7 +129,8 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(342)
-                    .setData(1).get("https://google.com.ua");
+                    .setData(1)
+                    .get("https://google.com.ua");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
@@ -157,7 +149,7 @@ public class HttpRequestTest {
 
     @Test
     void testBodyOverridesSpec() {
-        RequestConfig config = new RequestConfig();
+        var config = new RequestConfig();
         config.setData(1);
         try {
             http
@@ -184,7 +176,7 @@ public class HttpRequestTest {
 
     @Test
     void testTokenWithSpec() {
-        RequestConfig config = new RequestConfig();
+        var config = new RequestConfig();
         config.setHeaders(List.of(new Header("Authorization", "token1")));
 
         try {
@@ -211,10 +203,9 @@ public class HttpRequestTest {
 
     @Test
     void testWithTokenInSpec() {
-        RequestConfig config = new RequestConfig();
+        var config = new RequestConfig();
         config.setHeaders(List.of(new Header("Authorization", "token1")));
         config.setRequestTimeOut(null);
-//        config.setMaxResponseLength(777);
 
         try {
             http
@@ -237,7 +228,7 @@ public class HttpRequestTest {
                     .get("https://google.com");
             passed = true;
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("expected [404] but found [200]"));
+            assertTrue(error.getMessage().contains("expected [404] but found [301]"));
             passed = false;
         }
 
@@ -261,7 +252,7 @@ public class HttpRequestTest {
 
     @Test
     void testSpec() {
-        RequestConfig config = new RequestConfig();
+        var config = new RequestConfig();
         config.setHeaders(List.of(new Header("Authorization", "token1")));
         config.setData(1);
 
@@ -282,7 +273,8 @@ public class HttpRequestTest {
                     .setExpectedStatusCode(342)
                     .get("https://google.com.ua");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains(" curl -X GET 'https://google.com.ua'"));
+            assertTrue(error.getMessage().contains(" curl -X GET 'https://google.com.ua' -H 'Accept: application/json'"
+                    + " -H 'Content-Type: application/json; charset=UTF-8'\n"));
         }
     }
 
@@ -328,8 +320,8 @@ public class HttpRequestTest {
 
     @Test
     void testThreadLocalIsSingleContainerPerInstanceNotPerClass() {
-        RequestBuilder httpRequest1 = new RequestBuilder();
-        RequestBuilder httpRequest2 = new RequestBuilder();
+        var httpRequest1 = new RequestBuilder();
+        var httpRequest2 = new RequestBuilder();
 
         httpRequest1
                 .setData("123")
@@ -341,8 +333,9 @@ public class HttpRequestTest {
 
     @Test
     void testDataOverriding() {
-        RequestConfig config = new RequestConfig();
-        config.setHeaders(List.of(new Header("spec_header", "spec_header_value"), new Header("h1", "h1_spec")));
+        var config = new RequestConfig();
+        config.setHeaders(List.of(new Header("spec_header", "spec_header_value"),
+                new Header("h1", "h1_spec")));
         config.setData("body");
 
         try {
@@ -357,8 +350,8 @@ public class HttpRequestTest {
                     .get("https://google.com");
         } catch (AssertionError e) {
             assertTrue(e.getMessage().contains("--data '100'"), "Incorrect --data");
-            assertTrue(e.getMessage().contains("-H 'spec_header: spec_header_value' -H 'h1: h1_spec' -H 'Authorization:"
-                            + " token' -H 'h1: h1_value' -H 'h2: h2_value' -H 'Cookie: cookie'"),
+            assertTrue(e.getMessage().contains(" -H 'spec_header: spec_header_value' -H 'h1: h1_spec' -H 'h1: h1_value'"
+                            + " -H 'h2: h2_value' -H 'Cookie: cookie' -H 'Authorization: token'"),
                     "Incorrect headers");
         }
     }
@@ -374,7 +367,7 @@ public class HttpRequestTest {
 
     @Test
     void testPathParams() {
-        Response r = http.get("http://www.mocky.io/v2/{id}", "5ab8a4952c00005700186093");
+        var r = http.get("http://www.mocky.io/v2/{id}", "5ab8a4952c00005700186093");
 
         assertTrue(r.toJson().similar(new JSONObject().put("a", 1)));
     }
@@ -382,10 +375,10 @@ public class HttpRequestTest {
     @Test
     void testUriTemplate() {
         String a = "http://www.mocky.io/v2/{id}/sss/{sss}";
-        String[] b = new String[]{"1", "5 2"};
+        var map = Map.<String, Object>of("id", "d d", "sss", 2);
 
-//        System.out.println(buildPathParams(a, b));
+        var str = UriTemplate.fromTemplate(a).expand(map);
 
+        assertEquals(str, "http://www.mocky.io/v2/d%20d/sss/2");
     }
-
 }

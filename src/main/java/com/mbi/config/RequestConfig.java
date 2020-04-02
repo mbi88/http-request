@@ -59,7 +59,7 @@ public class RequestConfig {
     }
 
     public Object[] getPathParams() {
-        return pathParams;
+        return pathParams == null ? null : pathParams.clone();
     }
 
     public void setPathParams(final Object... pathParams) {

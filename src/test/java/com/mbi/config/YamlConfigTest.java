@@ -3,21 +3,18 @@ package com.mbi.config;
 import com.mbi.request.RequestBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 
-class YamlConfigTest {
+public class YamlConfigTest {
 
     @Test
-    void testCanSetConfigFromFile() {
-        var requestDirector = new RequestDirector();
-
-        var data = requestDirector.getDataFromYamlFile("http-request-test.yml");
-        requestDirector.setYamlData(data);
+    public void testCanSetConfigFromFile() {
+        var requestDirector = new RequestDirector("http-request-test.yml");
         requestDirector.constructRequest(new RequestBuilder());
 
         var actual = new JSONObject(requestDirector.getRequestConfig().toString());
@@ -33,7 +30,7 @@ class YamlConfigTest {
     }
 
     @Test
-    void testDefaultYmlConfig() {
+    public void testDefaultYmlConfig() {
         var requestDirector = new RequestDirector();
         requestDirector.constructRequest(new RequestBuilder());
 
@@ -50,11 +47,8 @@ class YamlConfigTest {
     }
 
     @Test
-    void testCanSetConfigFromFileWithoutConnectionTimeout() {
-        var requestDirector = new RequestDirector();
-
-        var data = requestDirector.getDataFromYamlFile("no_timeout.yml");
-        requestDirector.setYamlData(data);
+    public void testCanSetConfigFromFileWithoutConnectionTimeout() {
+        var requestDirector = new RequestDirector("no_timeout.yml");
         requestDirector.constructRequest(new RequestBuilder());
 
         var actual = new JSONObject(requestDirector.getRequestConfig().toString());
@@ -69,11 +63,8 @@ class YamlConfigTest {
     }
 
     @Test
-    void testCanSetConfigFromFileWithoutResponseLength() {
-        var requestDirector = new RequestDirector();
-
-        var data = requestDirector.getDataFromYamlFile("no_response_length.yml");
-        requestDirector.setYamlData(data);
+    public void testCanSetConfigFromFileWithoutResponseLength() {
+        var requestDirector = new RequestDirector("no_response_length.yml");
         requestDirector.constructRequest(new RequestBuilder());
 
         var actual = new JSONObject(requestDirector.getRequestConfig().toString());
@@ -89,11 +80,8 @@ class YamlConfigTest {
     }
 
     @Test
-    void testCanSetConfigFromFileWithoutHeaders() {
-        var requestDirector = new RequestDirector();
-
-        var data = requestDirector.getDataFromYamlFile("no_headers.yml");
-        requestDirector.setYamlData(data);
+    public void testCanSetConfigFromFileWithoutHeaders() {
+        var requestDirector = new RequestDirector("no_headers.yml");
         requestDirector.constructRequest(new RequestBuilder());
 
         var actual = new JSONObject(requestDirector.getRequestConfig().toString());
@@ -107,11 +95,8 @@ class YamlConfigTest {
     }
 
     @Test
-    void testGetNullPointerExceptionIfFileIsEmpty() {
-        var requestDirector = new RequestDirector();
-
-        var data = requestDirector.getDataFromYamlFile("empty.yml");
-        requestDirector.setYamlData(data);
+    public void testGetNullPointerExceptionIfFileIsEmpty() {
+        var requestDirector = new RequestDirector("empty.yml");
 
         boolean failed = true;
         try {
@@ -123,11 +108,8 @@ class YamlConfigTest {
     }
 
     @Test
-    void testCantLoadFileWithUnexpectedFields() {
-        var requestDirector = new RequestDirector();
-
-        var data = requestDirector.getDataFromYamlFile("invalid.yml");
-        requestDirector.setYamlData(data);
+    public void testCantLoadFileWithUnexpectedFields() {
+        var requestDirector = new RequestDirector("invalid.yml");
 
         try {
             requestDirector.constructRequest(new RequestBuilder());

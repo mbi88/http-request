@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 
 /**
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 final class HttpRequestPerformer implements Performable {
 
     private final List<OnRequestPerformedListener> requestListeners = new ArrayList<>();
-    private Response response = new Response();
+    private final Response response = new Response();
     private RequestConfig config;
 
     /**
@@ -45,7 +45,7 @@ final class HttpRequestPerformer implements Performable {
         }
 
         try {
-            assertEquals(config.getExpectedStatusCode(), response.getStatusCode());
+            assertEquals(response.getStatusCode(), config.getExpectedStatusCode());
         } catch (AssertionError assertionError) {
             final String msg = new MessageComposer(assertionError, config, response).composeMessage();
             throw new AssertionError(msg, assertionError);
@@ -63,16 +63,21 @@ final class HttpRequestPerformer implements Performable {
         final var httpClient = HttpClient.newBuilder().build();
         config = requestConfig;
 
+        final var timeout = Duration.ofMillis(requestConfig.getRequestTimeOut() == null
+                ? 600_000
+                : requestConfig.getRequestTimeOut());
+        final var requestData = requestConfig.getData() == null
+                ? HttpRequest.BodyPublishers.noBody()
+                : HttpRequest.BodyPublishers.ofString(requestConfig.getData().toString());
+
         try {
-            var request = HttpRequest.newBuilder()
-                    .timeout(Duration.ofMillis(requestConfig.getRequestTimeOut()))
-                    .method(requestConfig.getMethod().name(), requestConfig.getData() == null
-                            ? HttpRequest.BodyPublishers.noBody()
-                            : HttpRequest.BodyPublishers.ofString(requestConfig.getData().toString()))
+            final var request = HttpRequest.newBuilder()
+                    .timeout(timeout)
+                    .method(requestConfig.getMethod().name(), requestData)
                     .uri(URI.create(buildPathParams(requestConfig.getUrl(), requestConfig.getPathParams())));
 
-            if (requestConfig.getHeaders() != null) {
-                var list = new ArrayList<String>();
+            if (requestConfig.getHeaders() != null && !requestConfig.getHeaders().isEmpty()) {
+                final var list = new ArrayList<String>();
                 requestConfig.getHeaders().forEach(header -> {
                     list.add(header.getName());
                     list.add(header.getValue());
@@ -84,12 +89,13 @@ final class HttpRequestPerformer implements Performable {
             final var httpResponse = httpClient.send(request.build(), HttpResponse.BodyHandlers.ofString());
 
             response.setBody(httpResponse.body());
-            response.setHeaders(httpResponse.headers().map().entrySet().stream().map(m -> new Header(m.getKey(), m.getValue().get(0))).collect(Collectors.toList()));
+            response.setHeaders(httpResponse.headers().map().entrySet().stream()
+                    .map(m -> new Header(m.getKey(), m.getValue().get(0))).collect(Collectors.toList()));
             response.setStatusCode(httpResponse.statusCode());
 
             checkStatusCode(response, requestConfig);
-        } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | IOException ignored) {
+            // ignored
         } finally {
             requestListeners.forEach(OnRequestPerformedListener::onRequestPerformed);
         }
@@ -111,11 +117,10 @@ final class HttpRequestPerformer implements Performable {
         final Logger logger = LoggerFactory.getLogger("file-logger");
         logger.info(String.format("Request: %s%nResponse: %s%n",
                 config.toString(),
-                Objects.isNull(response) || Objects.isNull(response.getBody())
-                        ? "null" : response.getBody().toString()));
+                Objects.isNull(response.getBody()) ? "null" : response.getBody().toString()));
     }
 
-    private String buildPathParams(final String url, final Object[] pathParams) {
+    private String buildPathParams(final String url, final Object... pathParams) {
         final var template = UriTemplate.fromTemplate(url);
 
         if (template.getVariables().length == 0) {

@@ -6,6 +6,9 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+/**
+ * Response model.
+ */
 public class Response {
 
     private Object body;
@@ -45,7 +48,7 @@ public class Response {
     }
 
     public void print() {
-        System.out.println(getBody().toString());
+        // not yet
     }
 
     @Override
