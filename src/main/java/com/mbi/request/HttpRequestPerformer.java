@@ -1,6 +1,5 @@
 package com.mbi.request;
 
-import com.damnhandy.uri.template.UriTemplate;
 import com.mbi.config.Header;
 import com.mbi.config.RequestConfig;
 import com.mbi.response.Response;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.mbi.utils.Commons.buildPathParams;
 import static org.testng.Assert.assertEquals;
 
 
@@ -29,6 +29,7 @@ final class HttpRequestPerformer implements Performable {
 
     private final List<OnRequestPerformedListener> requestListeners = new ArrayList<>();
     private final Response response = new Response();
+    private final Logger logger = LoggerFactory.getLogger("file-logger");
     private RequestConfig config;
 
     /**
@@ -47,8 +48,8 @@ final class HttpRequestPerformer implements Performable {
         try {
             assertEquals(response.getStatusCode(), config.getExpectedStatusCode());
         } catch (AssertionError assertionError) {
-            final String msg = new MessageComposer(assertionError, config, response).composeMessage();
-            throw new AssertionError(msg, assertionError);
+            final var message = new MessageComposer(assertionError, config, response).composeMessage();
+            throw new AssertionError(message, assertionError);
         }
     }
 
@@ -94,8 +95,8 @@ final class HttpRequestPerformer implements Performable {
             response.setStatusCode(httpResponse.statusCode());
 
             checkStatusCode(response, requestConfig);
-        } catch (InterruptedException | IOException ignored) {
-            // ignored
+        } catch (InterruptedException | IOException error) {
+            logger.error(error.getMessage());
         } finally {
             requestListeners.forEach(OnRequestPerformedListener::onRequestPerformed);
         }
@@ -114,25 +115,8 @@ final class HttpRequestPerformer implements Performable {
 
     @Override
     public void onRequest() {
-        final Logger logger = LoggerFactory.getLogger("file-logger");
         logger.info(String.format("Request: %s%nResponse: %s%n",
                 config.toString(),
                 Objects.isNull(response.getBody()) ? "null" : response.getBody().toString()));
-    }
-
-    private String buildPathParams(final String url, final Object... pathParams) {
-        final var template = UriTemplate.fromTemplate(url);
-
-        if (template.getVariables().length == 0) {
-            return url;
-        }
-
-        var result = "";
-        for (int i = 0; i < template.getVariables().length; i++) {
-            result = template.set(template.getVariables()[i], pathParams[i]).expand();
-
-        }
-
-        return result;
     }
 }

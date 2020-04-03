@@ -32,7 +32,7 @@ public class RequestBuilder implements HttpRequest, Performable {
 
     @Override
     public HttpRequest setHeader(final String header, final String value) {
-        final List<Header> list = Objects.isNull(getHeaders()) ? new ArrayList<>() : getHeaders();
+        final var list = Objects.isNull(getHeaders()) ? new ArrayList<Header>() : getHeaders();
         list.add(new Header(header, value));
         headersThreadLocal.set(list);
         return this;
@@ -128,10 +128,11 @@ public class RequestBuilder implements HttpRequest, Performable {
         setMethod(method);
         setPathParams(pathParams);
 
-        final RequestDirector requestDirector = new RequestDirector();
+        final var requestDirector = new RequestDirector();
+        requestDirector.setYamlConfigFile("http-request.yml");
         requestDirector.constructRequest(this);
 
-        final HttpRequestPerformer httpRequest = new HttpRequestPerformer();
+        final var httpRequest = new HttpRequestPerformer();
         httpRequest.addRequestListener(httpRequest::onRequest);
         httpRequest.addRequestListener(this::onRequest);
 

@@ -3,6 +3,7 @@ package com.mbi.response;
 import com.mbi.config.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -48,7 +49,15 @@ public class Response {
     }
 
     public void print() {
-        // not yet
+        final var logger = LoggerFactory.getLogger(Response.class);
+
+        if (this.toString().charAt(0) == new JSONObject().toString().charAt(0)) {
+            logger.info(this.toJson().toString(2));
+        } else if (this.toString().charAt(0) == new JSONArray().toString().charAt(0)) {
+            logger.info(this.toJsonArray().toString(2));
+        } else {
+            logger.info(this.toString());
+        }
     }
 
     @Override

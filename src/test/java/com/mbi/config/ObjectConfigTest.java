@@ -14,6 +14,7 @@ public class ObjectConfigTest {
     @Test
     public void testCanSetHeaders() {
         var requestDirector = new RequestDirector();
+        requestDirector.setYamlConfigFile("http-request.yml");
         var config = new RequestConfig();
         config.setHeaders(List.of(new Header("h1", "v1"), new Header("h2", "v2"), new Header("h3", "v3")));
 
@@ -38,6 +39,7 @@ public class ObjectConfigTest {
     @Test
     public void testCanSetCode() {
         var requestDirector = new RequestDirector();
+        requestDirector.setYamlConfigFile("http-request.yml");
         var config = new RequestConfig();
         config.setExpectedStatusCode(200);
 

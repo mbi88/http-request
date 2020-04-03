@@ -4,6 +4,7 @@ import com.mbi.config.Header;
 import com.mbi.config.RequestConfig;
 import com.mbi.request.RequestBuilder;
 import com.mbi.response.Response;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.testng.Assert.*;
 
@@ -380,5 +382,50 @@ public class HttpRequestTest {
         var str = UriTemplate.fromTemplate(a).expand(map);
 
         assertEquals(str, "http://www.mocky.io/v2/d%20d/sss/2");
+    }
+
+    @Test
+    public void testGetHeaders() {
+        var r = http.get("http://www.mocky.io/v2/{id}", "5ab8a4952c00005700186093");
+
+        var success = new AtomicBoolean(false);
+        r.getHeaders().forEach(h -> {
+            if (h.getName().equalsIgnoreCase("content-type")
+                    && h.getValue().equalsIgnoreCase("application/json")) {
+                success.set(true);
+            }
+        });
+
+        assertTrue(success.get());
+    }
+
+    @Test
+    public void testCanGetJsonArray() {
+        var r = http.get("http://www.mocky.io/v2/5e864ece3100006c00813977");
+
+        var actual = r.toJsonArray();
+
+        assertTrue(actual.similar(new JSONArray().put(new JSONObject().put("a", 1))));
+    }
+
+    @Test
+    public void testPrintJsonObject() {
+        var r = http.get("http://www.mocky.io/v2/5ab8a4952c00005700186093");
+
+        r.print();
+    }
+
+    @Test
+    public void testPrintJsonArray() {
+        var r = http.get("http://www.mocky.io/v2/5e864ece3100006c00813977");
+
+        r.print();
+    }
+
+    @Test
+    public void testPrintString() {
+        var r = http.get("http://www.mocky.io/v2/5e8653163100000929813989");
+
+        r.print();
     }
 }
