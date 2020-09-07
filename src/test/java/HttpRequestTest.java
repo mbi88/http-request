@@ -13,7 +13,7 @@ import static org.testng.Assert.*;
 
 public class HttpRequestTest {
 
-    private HttpRequest http = new RequestBuilder();
+    private final HttpRequest http = new RequestBuilder();
 
     @Test
     public void testSetHeader() {
@@ -366,6 +366,31 @@ public class HttpRequestTest {
         } catch (AssertionError assertionError) {
             assertTrue(assertionError.getMessage().startsWith("Response has errors!"));
         }
+    }
+
+    @Test
+    public void testCheckErrorsIfNoErrorsInArrayResponse() {
+        http
+                .checkNoErrors(true)
+                .get("https://run.mocky.io/v3/e9ad8189-9a13-4a90-93d6-53316f455936");
+    }
+
+    @Test
+    public void testCheckErrorsIfHasErrorsInArrayResponse() {
+        try {
+            http
+                    .checkNoErrors(true)
+                    .get("https://run.mocky.io/v3/dcad4d3b-0b8e-47ba-b907-e0177cec44d7");
+        } catch (AssertionError assertionError) {
+            assertTrue(assertionError.getMessage().startsWith("Response has errors!"));
+        }
+    }
+
+    @Test
+    public void testCheckNoErrorsIfHasErrorsInArrayResponse() {
+            http
+                    .checkNoErrors(false)
+                    .get("https://run.mocky.io/v3/dcad4d3b-0b8e-47ba-b907-e0177cec44d7");
     }
 
     @Test

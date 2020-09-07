@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -56,7 +57,19 @@ final class HttpRequestPerformer implements Performable {
             return;
         }
 
-        final boolean hasErrors = response.body().jsonPath().getList("errors") != null;
+        final var errors = response.body().jsonPath().getList("errors");
+        // Check if list has errors
+        final Predicate<List<Object>> checkListHasErrors = list -> {
+            var listHasErrors = false;
+            for (var o : list) {
+                if (!Objects.isNull(o)) {
+                    listHasErrors = true;
+                    break;
+                }
+            }
+            return listHasErrors;
+        };
+        final boolean hasErrors = errors != null && checkListHasErrors.test(errors);
 
         try {
             assertFalse(hasErrors, "Response has errors!");
