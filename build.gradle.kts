@@ -4,6 +4,7 @@ plugins {
     id("ru.vyarus.quality").version("4.7.0")
     id("java-library")
     id("jacoco")
+    id("maven-publish")
 }
 
 val suitesDir = "src/test/resources/suites/"
