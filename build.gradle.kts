@@ -70,3 +70,15 @@ quality {
 tasks.check {
     dependsOn(tasks.jacocoTestReport)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.mbi"
+            artifactId = "http-request"
+            version = "1.0"
+
+            from(components["java"])
+        }
+    }
+}
