@@ -22,13 +22,7 @@ dependencies {
     implementation("com.google.code.gson", "gson", "2.8.9")
 }
 
-tasks.withType<JavaCompile> {
-    options.compilerArgs.add("--enable-preview")
-}
-
 tasks.test {
-    jvmArgs("--enable-preview")
-
     useTestNG {
         // Add test suites
         File(projectDir.absolutePath + "/" + suitesDir)
