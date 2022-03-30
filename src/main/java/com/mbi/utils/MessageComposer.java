@@ -15,6 +15,11 @@ public final class MessageComposer {
     private final String request;
     private final int responseLength;
 
+    /**
+     * @param error    assertion error
+     * @param config   needed to limit max response length
+     * @param response response
+     */
     public MessageComposer(final AssertionError error, final RequestConfig config, final Response response) {
         this.error = error.getMessage();
         this.url = String.format("%nUrl: %s", config.getUrl());
@@ -23,6 +28,11 @@ public final class MessageComposer {
         this.responseLength = config.getMaxResponseLength();
     }
 
+    /**
+     * Composes pretty error message.
+     *
+     * @return error message
+     */
     public String composeMessage() {
         return error
                 .concat(url)
