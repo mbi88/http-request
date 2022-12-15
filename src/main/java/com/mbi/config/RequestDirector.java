@@ -41,7 +41,7 @@ public class RequestDirector {
         requestConfig.setUrl(requestBuilder.getUrl());
         requestConfig.setData(((FilterableRequestSpecification) spec).getBody());
         requestConfig.setHeaders(new ArrayList<>(((FilterableRequestSpecification) spec).getHeaders().asList()));
-        requestConfig.setExpectedStatusCode(requestBuilder.getStatusCode());
+        requestConfig.setExpectedStatusCodes(requestBuilder.getStatusCodes());
         requestConfig.setPathParams(requestBuilder.getPathParams());
         requestConfig.setDebug(requestBuilder.getDebug());
         requestConfig.setMaxResponseLength(getMaxResponseLength());

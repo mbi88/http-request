@@ -22,7 +22,7 @@ public class HttpRequestTest {
                     .setHeader("header1", "v")
                     .setHeader("header2", "v")
                     .setExpectedStatusCode(300)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'header1: v' -H 'header2: v'"));
         }
@@ -49,9 +49,9 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(230)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71'"));
         }
     }
 
@@ -63,7 +63,7 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(342)
                     .setHeader("h2", "v")
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
         }
@@ -77,7 +77,7 @@ public class HttpRequestTest {
                     .setToken("wer")
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(342)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'Authorization: wer'"));
         }
@@ -91,9 +91,9 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setHeader("Accept", "2")
                     .setExpectedStatusCode(342)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Accept: 2'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71' -H 'Accept: 2'"));
         }
     }
 
@@ -102,7 +102,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(342)
-                    .setData(1).get("https://google.com.ua");
+                    .setData(1).get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
@@ -113,7 +113,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(324)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().contains(" --data '"));
         }
@@ -127,7 +127,7 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(234)
                     .setData(2)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '2'\n\n"));
         }
@@ -139,7 +139,7 @@ public class HttpRequestTest {
             http
                     .setToken("token")
                     .setExpectedStatusCode(4534)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'Authorization: token"));
         }
@@ -153,7 +153,7 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(24)
                     .setToken("token2")
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'Authorization: token2"));
         }
@@ -164,7 +164,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(356)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().contains("-H 'Authorization:"));
         }
@@ -177,7 +177,7 @@ public class HttpRequestTest {
             http
                     .setExpectedStatusCode(463)
                     .setRequestSpecification(spec)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'Authorization: token1"));
         }
@@ -188,30 +188,55 @@ public class HttpRequestTest {
         boolean passed;
         try {
             http
-                    .setExpectedStatusCode(404)
-                    .get("https://google.com");
+                    .setExpectedStatusCode(403)
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
             passed = true;
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("expected [404] but found [200]"));
+            assertTrue(error.getMessage().contains("expected [[403]] but found [200]"));
             passed = false;
         }
 
         assertFalse(passed);
-        http.get("https://google.com");
+    }
+
+    @Test
+    public void testCodesFail() {
+        boolean passed;
+        try {
+            http
+                    .setExpectedStatusCodes(List.of(404, 403, 405))
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+            passed = true;
+        } catch (AssertionError error) {
+            assertTrue(error.getMessage().contains("expected [[404, 403, 405]] but found [200]"));
+            passed = false;
+        }
+
+        assertFalse(passed);
+    }
+
+    @Test
+    public void testCodesSuccess() {
+        http
+                .setExpectedStatusCodes(List.of(200, 404, 500))
+                .get("https://run.mocky.io/v3/c7de2fe2-0458-4eea-a7ef-dadd94331b94");
     }
 
     @Test
     public void testCodeSuccess() {
         http
                 .setExpectedStatusCode(404)
-                .get("https://google.com/asdasd");
+                .get("https://run.mocky.io/v3/c7de2fe2-0458-4eea-a7ef-dadd94331b94");
     }
 
     @Test
     public void testWithoutCode() {
-        Response r = http.get("https://google.com/asdasd");
+        Response r = http.get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
 
-        assertTrue(r.asString().contains("<html"));
+        assertEquals(r.asString(), """
+                {
+                "a": 1
+                }""");
     }
 
     @Test
@@ -224,9 +249,9 @@ public class HttpRequestTest {
             http
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(234)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://google.com.ua' -H 'Authorization: token1' --data '1'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71' -H 'Authorization: token1' --data '1'"));
         }
     }
 
@@ -235,9 +260,9 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(342)
-                    .get("https://google.com.ua");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains(" curl -X GET 'https://google.com.ua'"));
+            assertTrue(error.getMessage().contains(" curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71'"));
         }
     }
 
@@ -269,13 +294,13 @@ public class HttpRequestTest {
     @Test
     public void testBuildersResetAfterRequest() {
         try {
-            http.setExpectedStatusCode(234).setData(1).get("https://google.com.ua");
+            http.setExpectedStatusCode(234).setData(1).get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
 
         try {
-            http.setExpectedStatusCode(4353).get("https://google.com.ua");
+            http.setExpectedStatusCode(4353).get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().endsWith("--data '1'\n\n"));
         }
@@ -288,7 +313,7 @@ public class HttpRequestTest {
 
         httpRequest1
                 .setData("123")
-                .setToken(httpRequest2.get("https://google.com").asString());
+                .setToken(httpRequest2.get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71").asString());
 
         assertEquals(httpRequest1.getData().toString(), "123");
         assertNull(httpRequest2.getData());
@@ -310,7 +335,7 @@ public class HttpRequestTest {
                     .setHeader("h2", "h2_value")
                     .setToken("token")
                     .setHeader("Cookie", "cookie")
-                    .get("https://google.com");
+                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
         } catch (AssertionError e) {
             assertTrue(e.getMessage().contains("--data '100'"), "Incorrect --data");
             assertTrue(e.getMessage().contains("-H 'spec_header: spec_header_value' -H 'h1: h1_spec' -H 'Authorization:"
@@ -333,7 +358,7 @@ public class HttpRequestTest {
         RequestBuilder b1 = new RequestBuilder();
         b1
                 .debug()
-                .setUrl("https://google.com");
+                .setUrl("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
 
         assertTrue(b1.getDebug());
     }
@@ -341,10 +366,10 @@ public class HttpRequestTest {
     @Test
     public void testDebugFalse() {
         RequestBuilder b1 = new RequestBuilder();
-        b1.debug().get("https://google.com");
+        b1.debug().get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
 
         RequestBuilder b2 = new RequestBuilder();
-        b2.setUrl("https://google.com");
+        b2.setUrl("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
 
         assertFalse(b1.getDebug());
         assertFalse(b2.getDebug());

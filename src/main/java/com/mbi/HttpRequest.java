@@ -49,12 +49,20 @@ public interface HttpRequest {
     HttpRequest setToken(String token);
 
     /**
-     * Sets expected in response status code.
+     * Sets expected status code in response.
      *
      * @param code expected code.
      * @return HttpRequest.
      */
     HttpRequest setExpectedStatusCode(Integer code);
+
+    /**
+     * Sets expected status codes in response .
+     *
+     * @param codes expected code.
+     * @return HttpRequest.
+     */
+    HttpRequest setExpectedStatusCodes(List<Integer> codes);
 
     /**
      * Sets if response should contain 'errors' array.

@@ -17,7 +17,7 @@ public class RequestConfig {
     private Object data;
     private transient RequestSpecification requestSpecification;
     private List<Header> headers;
-    private Integer expectedStatusCode;
+    private List<Integer> expectedStatusCodes;
     private Object[] pathParams;
     private int maxResponseLength;
     private boolean debug;
@@ -63,12 +63,12 @@ public class RequestConfig {
         this.headers = headers;
     }
 
-    public Integer getExpectedStatusCode() {
-        return expectedStatusCode;
+    public List<Integer> getExpectedStatusCodes() {
+        return expectedStatusCodes;
     }
 
-    public void setExpectedStatusCode(final Integer expectedStatusCode) {
-        this.expectedStatusCode = expectedStatusCode;
+    public void setExpectedStatusCodes(final List<Integer> expectedStatusCodes) {
+        this.expectedStatusCodes = expectedStatusCodes;
     }
 
     public Object[] getPathParams() {

@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.*;
 
 /**
  * Performs request.
@@ -32,12 +31,14 @@ final class HttpRequestPerformer implements Performable {
      */
     private void checkStatusCode(final Response response, final RequestConfig config) {
         // No need to check status code if it's not set
-        if (Objects.isNull(config.getExpectedStatusCode())) {
+        if (Objects.isNull(config.getExpectedStatusCodes())) {
             return;
         }
 
         try {
-            assertEquals(response.statusCode(), config.getExpectedStatusCode().intValue());
+            if (!config.getExpectedStatusCodes().contains(response.statusCode())) {
+                assertEquals(String.valueOf(response.statusCode()), config.getExpectedStatusCodes().toString());
+            }
         } catch (AssertionError assertionError) {
             final String msg = new MessageComposer(assertionError, config, response).composeMessage();
             throw new AssertionError(msg, assertionError);

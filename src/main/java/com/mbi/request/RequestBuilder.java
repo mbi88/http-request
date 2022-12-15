@@ -24,7 +24,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
     private final ThreadLocal<String> urlThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Method> methodsThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Object> dataThreadLocal = new ThreadLocal<>();
-    private final ThreadLocal<Integer> statusCodeThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<List<Integer>> statusCodesThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<String> tokenThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<List<Header>> headersThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<RequestSpecification> specificationThreadLocal = new ThreadLocal<>();
@@ -72,7 +72,16 @@ public final class RequestBuilder implements HttpRequest, Performable {
 
     @Override
     public HttpRequest setExpectedStatusCode(final Integer statusCode) {
-        statusCodeThreadLocal.set(statusCode);
+        final List<Integer> list = new ArrayList<>();
+        list.add(statusCode);
+        statusCodesThreadLocal.set(list);
+
+        return this;
+    }
+
+    @Override
+    public HttpRequest setExpectedStatusCodes(final List<Integer> codes) {
+        statusCodesThreadLocal.set(codes);
         return this;
     }
 
@@ -86,8 +95,8 @@ public final class RequestBuilder implements HttpRequest, Performable {
         return checkNoErrorsThreadLocal.get();
     }
 
-    public Integer getStatusCode() {
-        return statusCodeThreadLocal.get();
+    public List<Integer> getStatusCodes() {
+        return statusCodesThreadLocal.get();
     }
 
     @Override
@@ -198,6 +207,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
         setUrl(null);
         setData(null);
         setExpectedStatusCode(null);
+        setExpectedStatusCodes(null);
         setToken(null);
         setHeaders(null);
         setMethod(null);
