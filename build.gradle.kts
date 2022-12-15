@@ -1,7 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
-    id("ru.vyarus.quality").version("4.7.0")
+    id("ru.vyarus.quality").version("4.8.0")
     id("java-library")
     id("jacoco")
     id("maven-publish")
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.testng:testng:7.6.1")
+    implementation("org.testng:testng:7.7.0")
     implementation("io.rest-assured:rest-assured:5.3.0")
     implementation("org.yaml:snakeyaml:1.33")
     implementation("ch.qos.logback:logback-classic:1.4.5")
