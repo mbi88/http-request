@@ -268,27 +268,29 @@ public class HttpRequestTest {
 
     @Test
     public void testGet() {
-        http.setExpectedStatusCode(200).get("https://httpbin.org/get");
+        http.setExpectedStatusCode(200).get("https://dummyjson.com/products/1");
     }
 
     @Test
     public void testPost() {
-        http.setExpectedStatusCode(200).post("https://httpbin.org/post");
+        http
+                .setData("data")
+                .setExpectedStatusCode(200).post("https://dummyjson.com/products/add");
     }
 
     @Test
     public void testDelete() {
-        http.setExpectedStatusCode(200).delete("https://httpbin.org/delete");
+        http.setExpectedStatusCode(200).delete("https://dummyjson.com/products/1");
     }
 
     @Test
     public void testPatch() {
-        http.setExpectedStatusCode(200).patch("https://httpbin.org/patch");
+        http.setExpectedStatusCode(200).patch("https://dummyjson.com/products/1");
     }
 
     @Test
     public void testPut() {
-        http.setExpectedStatusCode(200).put("https://httpbin.org/put");
+        http.setExpectedStatusCode(200).put("https://dummyjson.com/products/1");
     }
 
     @Test
@@ -413,9 +415,9 @@ public class HttpRequestTest {
 
     @Test
     public void testCheckNoErrorsIfHasErrorsInArrayResponse() {
-            http
-                    .checkNoErrors(false)
-                    .get("https://run.mocky.io/v3/dcad4d3b-0b8e-47ba-b907-e0177cec44d7");
+        http
+                .checkNoErrors(false)
+                .get("https://run.mocky.io/v3/dcad4d3b-0b8e-47ba-b907-e0177cec44d7");
     }
 
     @Test
