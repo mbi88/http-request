@@ -18,7 +18,7 @@ dependencies {
     implementation("org.testng:testng:7.8.0")
     implementation("io.rest-assured:rest-assured:5.3.1")
     implementation("org.yaml:snakeyaml:2.1")
-    implementation("ch.qos.logback:logback-classic:1.4.8")
+    implementation("ch.qos.logback:logback-classic:1.4.9")
     implementation("com.google.code.gson:gson:2.10.1")
 }
 
