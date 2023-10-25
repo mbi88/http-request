@@ -1,8 +1,6 @@
 import com.mbi.HttpRequest;
 import com.mbi.request.RequestBuilder;
 import io.restassured.http.Header;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ public class HttpRequestTest {
 
     @Test
     public void testSetHeaders() {
-        List<Header> headers = new ArrayList<>();
+        var headers = new ArrayList<Header>();
         headers.add(new Header("h1", "v"));
         headers.add(new Header("h2", "v"));
 
@@ -57,7 +55,7 @@ public class HttpRequestTest {
 
     @Test
     public void testHeadersWithSpec() {
-        RequestSpecification spec = given().header("h1", "v");
+        var spec = given().header("h1", "v");
         try {
             http
                     .setRequestSpecification(spec)
@@ -71,7 +69,7 @@ public class HttpRequestTest {
 
     @Test
     public void testSpecHeaders() {
-        RequestSpecification spec = given().header("h1", "v");
+        var spec = given().header("h1", "v");
         try {
             http
                     .setToken("wer")
@@ -85,7 +83,7 @@ public class HttpRequestTest {
 
     @Test
     public void testHeadersOverride() {
-        RequestSpecification spec = given().header("Accept", "1");
+        var spec = given().header("Accept", "1");
         try {
             http
                     .setRequestSpecification(spec)
@@ -121,7 +119,7 @@ public class HttpRequestTest {
 
     @Test
     public void testBodyOverridesSpec() {
-        RequestSpecification spec = given().body(1);
+        var spec = given().body(1);
         try {
             http
                     .setRequestSpecification(spec)
@@ -147,7 +145,7 @@ public class HttpRequestTest {
 
     @Test
     public void testTokenWithSpec() {
-        RequestSpecification spec = given().header(new Header("Authorization", "token1"));
+        var spec = given().header(new Header("Authorization", "token1"));
         try {
             http
                     .setRequestSpecification(spec)
@@ -172,7 +170,7 @@ public class HttpRequestTest {
 
     @Test
     public void testWithTokenInSpec() {
-        RequestSpecification spec = given().header(new Header("Authorization", "token1"));
+        var spec = given().header(new Header("Authorization", "token1"));
         try {
             http
                     .setExpectedStatusCode(463)
@@ -189,7 +187,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(403)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/c574bcf8-549a-4637-918f-cecc2478af94");
             passed = true;
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("expected [[403]] but found [200]"));
@@ -205,7 +203,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCodes(List.of(404, 403, 405))
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/c574bcf8-549a-4637-918f-cecc2478af94");
             passed = true;
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("expected [[404, 403, 405]] but found [200]"));
@@ -231,17 +229,17 @@ public class HttpRequestTest {
 
     @Test
     public void testWithoutCode() {
-        Response r = http.get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+        var r = http.get("https://run.mocky.io/v3/c4da5edc-27e6-4fe3-92d6-92d9e6ddf36a");
 
         assertEquals(r.asString(), """
                 {
-                "a": 1
+                    "a": 1
                 }""");
     }
 
     @Test
     public void testSpec() {
-        RequestSpecification spec = given()
+        var spec = given()
                 .header(new Header("Authorization", "token1"))
                 .body(1);
 
@@ -310,8 +308,8 @@ public class HttpRequestTest {
 
     @Test
     public void testThreadLocalIsSingleContainerPerInstanceNotPerClass() {
-        RequestBuilder httpRequest1 = new RequestBuilder();
-        RequestBuilder httpRequest2 = new RequestBuilder();
+        var httpRequest1 = new RequestBuilder();
+        var httpRequest2 = new RequestBuilder();
 
         httpRequest1
                 .setData("123")
@@ -323,7 +321,7 @@ public class HttpRequestTest {
 
     @Test
     public void testDataOverriding() {
-        RequestSpecification specification = given()
+        var specification = given()
                 .header("spec_header", "spec_header_value")
                 .header("h1", "h1_spec")
                 .body("body");
@@ -357,7 +355,7 @@ public class HttpRequestTest {
 
     @Test
     public void testDebugTrue() {
-        RequestBuilder b1 = new RequestBuilder();
+        var b1 = new RequestBuilder();
         b1
                 .debug()
                 .setUrl("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
@@ -367,10 +365,10 @@ public class HttpRequestTest {
 
     @Test
     public void testDebugFalse() {
-        RequestBuilder b1 = new RequestBuilder();
+        var b1 = new RequestBuilder();
         b1.debug().get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
 
-        RequestBuilder b2 = new RequestBuilder();
+        var b2 = new RequestBuilder();
         b2.setUrl("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
 
         assertFalse(b1.getDebug());
@@ -379,7 +377,7 @@ public class HttpRequestTest {
 
     @Test
     public void testPathParams() {
-        Response r = http.get("http://www.mocky.io/v2/{id}", "5ab8a4952c00005700186093");
+        var r = http.get("https://run.mocky.io/v3/{id}", "c4da5edc-27e6-4fe3-92d6-92d9e6ddf36a");
 
         assertTrue(r.asString().contains("\"a\": 1"), r.asString());
     }
@@ -389,7 +387,7 @@ public class HttpRequestTest {
         try {
             http
                     .checkNoErrors(true)
-                    .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+                    .get("https://run.mocky.io/v3/c574bcf8-549a-4637-918f-cecc2478af94");
         } catch (AssertionError assertionError) {
             assertTrue(assertionError.getMessage().startsWith("Response has errors!"));
         }
@@ -399,7 +397,7 @@ public class HttpRequestTest {
     public void testCheckErrorsIfNoErrorsInArrayResponse() {
         http
                 .checkNoErrors(true)
-                .get("https://run.mocky.io/v3/e9ad8189-9a13-4a90-93d6-53316f455936");
+                .get("https://run.mocky.io/v3/9279e741-d38d-40d9-8c6f-e5aa13005d69");
     }
 
     @Test
@@ -407,7 +405,7 @@ public class HttpRequestTest {
         try {
             http
                     .checkNoErrors(true)
-                    .get("https://run.mocky.io/v3/dcad4d3b-0b8e-47ba-b907-e0177cec44d7");
+                    .get("https://run.mocky.io/v3/770605f1-c379-419e-94bf-3c3035f077d9");
         } catch (AssertionError assertionError) {
             assertTrue(assertionError.getMessage().startsWith("Response has errors!"));
         }
@@ -438,7 +436,7 @@ public class HttpRequestTest {
     public void testNoExceptionIfCheckErrorsTrueAndNoErrorsInResponse() {
         http
                 .checkNoErrors(true)
-                .get("http://www.mocky.io/v2/5ab8a4952c00005700186093");
+                .get("https://run.mocky.io/v3/c4da5edc-27e6-4fe3-92d6-92d9e6ddf36a");
     }
 
     @Test
