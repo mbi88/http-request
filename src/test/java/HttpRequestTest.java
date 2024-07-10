@@ -415,7 +415,7 @@ public class HttpRequestTest {
     public void testCheckNoErrorsIfHasErrorsInArrayResponse() {
         http
                 .checkNoErrors(false)
-                .get("https://run.mocky.io/v3/dcad4d3b-0b8e-47ba-b907-e0177cec44d7");
+                .get("https://run.mocky.io/v3/a481192b-83fc-46a0-a114-287d4c2e49d6");
     }
 
     @Test
