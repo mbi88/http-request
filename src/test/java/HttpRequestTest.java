@@ -20,7 +20,7 @@ public class HttpRequestTest {
                     .setHeader("header1", "v")
                     .setHeader("header2", "v")
                     .setExpectedStatusCode(300)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'header1: v' -H 'header2: v'"));
         }
@@ -36,7 +36,7 @@ public class HttpRequestTest {
             http
                     .setHeaders(headers)
                     .setExpectedStatusCode(300)
-                    .get("http://www.mocky.io/v2/5ab8a4952c00005700186093");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
         }
@@ -47,9 +47,9 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(230)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a'"));
         }
     }
 
@@ -61,7 +61,7 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(342)
                     .setHeader("h2", "v")
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
         }
@@ -75,7 +75,7 @@ public class HttpRequestTest {
                     .setToken("wer")
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(342)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'h1: v' -H 'Authorization: wer'"));
         }
@@ -89,9 +89,9 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setHeader("Accept", "2")
                     .setExpectedStatusCode(342)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71' -H 'Accept: 2'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a' -H 'Accept: 2'"));
         }
     }
 
@@ -100,7 +100,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(342)
-                    .setData(1).get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .setData(1).get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
@@ -111,7 +111,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(324)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().contains(" --data '"));
         }
@@ -125,7 +125,7 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(234)
                     .setData(2)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '2'\n\n"));
         }
@@ -137,7 +137,7 @@ public class HttpRequestTest {
             http
                     .setToken("token")
                     .setExpectedStatusCode(4534)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'Authorization: token"));
         }
@@ -151,7 +151,7 @@ public class HttpRequestTest {
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(24)
                     .setToken("token2")
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'Authorization: token2"));
         }
@@ -162,7 +162,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(356)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().contains("-H 'Authorization:"));
         }
@@ -175,7 +175,7 @@ public class HttpRequestTest {
             http
                     .setExpectedStatusCode(463)
                     .setRequestSpecification(spec)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("-H 'Authorization: token1"));
         }
@@ -187,7 +187,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(403)
-                    .get("https://run.mocky.io/v3/c574bcf8-549a-4637-918f-cecc2478af94");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
             passed = true;
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("expected [[403]] but found [200]"));
@@ -203,7 +203,7 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCodes(List.of(404, 403, 405))
-                    .get("https://run.mocky.io/v3/c574bcf8-549a-4637-918f-cecc2478af94");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
             passed = true;
         } catch (AssertionError error) {
             assertTrue(error.getMessage().contains("expected [[404, 403, 405]] but found [200]"));
@@ -229,12 +229,10 @@ public class HttpRequestTest {
 
     @Test
     public void testWithoutCode() {
-        var r = http.get("https://run.mocky.io/v3/c4da5edc-27e6-4fe3-92d6-92d9e6ddf36a");
+        var r = http.get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
 
         assertEquals(r.asString(), """
-                {
-                    "a": 1
-                }""");
+                {"a":1}""");
     }
 
     @Test
@@ -247,9 +245,9 @@ public class HttpRequestTest {
             http
                     .setRequestSpecification(spec)
                     .setExpectedStatusCode(234)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71' -H 'Authorization: token1' --data '1'"));
+            assertTrue(error.getMessage().contains("curl -X GET 'https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a' -H 'Authorization: token1' --data '1'"));
         }
     }
 
@@ -258,9 +256,9 @@ public class HttpRequestTest {
         try {
             http
                     .setExpectedStatusCode(342)
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
-            assertTrue(error.getMessage().contains(" curl -X GET 'https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71'"));
+            assertTrue(error.getMessage().contains(" curl -X GET 'https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a'"));
         }
     }
 
@@ -273,7 +271,8 @@ public class HttpRequestTest {
     public void testPost() {
         http
                 .setData("data")
-                .setExpectedStatusCode(200).post("https://dummyjson.com/products/add");
+                .setExpectedStatusCode(201)
+                .post("https://dummyjson.com/products/add");
     }
 
     @Test
@@ -294,13 +293,13 @@ public class HttpRequestTest {
     @Test
     public void testBuildersResetAfterRequest() {
         try {
-            http.setExpectedStatusCode(234).setData(1).get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+            http.setExpectedStatusCode(234).setData(1).get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertTrue(error.getMessage().endsWith("--data '1'\n\n"));
         }
 
         try {
-            http.setExpectedStatusCode(4353).get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+            http.setExpectedStatusCode(4353).get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError error) {
             assertFalse(error.getMessage().endsWith("--data '1'\n\n"));
         }
@@ -313,7 +312,7 @@ public class HttpRequestTest {
 
         httpRequest1
                 .setData("123")
-                .setToken(httpRequest2.get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71").asString());
+                .setToken(httpRequest2.get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a").asString());
 
         assertEquals(httpRequest1.getData().toString(), "123");
         assertNull(httpRequest2.getData());
@@ -335,7 +334,7 @@ public class HttpRequestTest {
                     .setHeader("h2", "h2_value")
                     .setToken("token")
                     .setHeader("Cookie", "cookie")
-                    .get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                    .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
         } catch (AssertionError e) {
             assertTrue(e.getMessage().contains("--data '100'"), "Incorrect --data");
             assertTrue(e.getMessage().contains("-H 'spec_header: spec_header_value' -H 'h1: h1_spec' -H 'Authorization:"
@@ -358,7 +357,7 @@ public class HttpRequestTest {
         var b1 = new RequestBuilder();
         b1
                 .debug()
-                .setUrl("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+                .setUrl("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
 
         assertTrue(b1.getDebug());
     }
@@ -366,10 +365,10 @@ public class HttpRequestTest {
     @Test
     public void testDebugFalse() {
         var b1 = new RequestBuilder();
-        b1.debug().get("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+        b1.debug().get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
 
         var b2 = new RequestBuilder();
-        b2.setUrl("https://run.mocky.io/v3/0fd64e32-9380-4075-b287-8b87a2e67c71");
+        b2.setUrl("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
 
         assertFalse(b1.getDebug());
         assertFalse(b2.getDebug());
@@ -377,9 +376,10 @@ public class HttpRequestTest {
 
     @Test
     public void testPathParams() {
-        var r = http.get("https://run.mocky.io/v3/{id}", "c4da5edc-27e6-4fe3-92d6-92d9e6ddf36a");
+        var r = http.get("https://run.mocky.io/v3/{id}", "2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
 
-        assertTrue(r.asString().contains("\"a\": 1"), r.asString());
+        assertEquals(r.asString(), """
+                {"a":1}""");
     }
 
     @Test
@@ -387,7 +387,7 @@ public class HttpRequestTest {
         try {
             http
                     .checkNoErrors(true)
-                    .get("https://run.mocky.io/v3/c574bcf8-549a-4637-918f-cecc2478af94");
+                    .get("https://run.mocky.io/v3/85effc81-8aa7-4da2-963e-89cda64840b5");
         } catch (AssertionError assertionError) {
             assertTrue(assertionError.getMessage().startsWith("Response has errors!"));
         }
@@ -397,7 +397,7 @@ public class HttpRequestTest {
     public void testCheckErrorsIfNoErrorsInArrayResponse() {
         http
                 .checkNoErrors(true)
-                .get("https://run.mocky.io/v3/9279e741-d38d-40d9-8c6f-e5aa13005d69");
+                .get("https://run.mocky.io/v3/fa8898cd-81ac-43f7-8601-0c4a49e09fdb");
     }
 
     @Test
@@ -405,7 +405,7 @@ public class HttpRequestTest {
         try {
             http
                     .checkNoErrors(true)
-                    .get("https://run.mocky.io/v3/770605f1-c379-419e-94bf-3c3035f077d9");
+                    .get("https://run.mocky.io/v3/a481192b-83fc-46a0-a114-287d4c2e49d6");
         } catch (AssertionError assertionError) {
             assertTrue(assertionError.getMessage().startsWith("Response has errors!"));
         }
@@ -422,27 +422,27 @@ public class HttpRequestTest {
     public void testErrorsNotCheckedIfFalse() {
         http
                 .checkNoErrors(false)
-                .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+                .get("https://run.mocky.io/v3/85effc81-8aa7-4da2-963e-89cda64840b5");
     }
 
 
     @Test
     public void testErrorsNotCheckedIfNull() {
         http
-                .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+                .get("https://run.mocky.io/v3/85effc81-8aa7-4da2-963e-89cda64840b5");
     }
 
     @Test
     public void testNoExceptionIfCheckErrorsTrueAndNoErrorsInResponse() {
         http
                 .checkNoErrors(true)
-                .get("https://run.mocky.io/v3/c4da5edc-27e6-4fe3-92d6-92d9e6ddf36a");
+                .get("https://run.mocky.io/v3/2b6e17a9-a348-4211-8c8e-4dbdc151bf9a");
     }
 
     @Test
     public void testNoExceptionIfCheckNoErrorsNull() {
         http
                 .checkNoErrors(false)
-                .get("http://www.mocky.io/v2/5dcc5cfe54000068ad9c22fb");
+                .get("https://run.mocky.io/v3/85effc81-8aa7-4da2-963e-89cda64840b5");
     }
 }
