@@ -19,7 +19,7 @@ dependencies {
     implementation("io.rest-assured:rest-assured:5.5.0")
     implementation("org.yaml:snakeyaml:2.3")
     implementation("ch.qos.logback:logback-classic:1.5.16")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.12.1")
 }
 
 tasks.test {
