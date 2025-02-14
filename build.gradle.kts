@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.testng:testng:7.10.2")
+    implementation("org.testng:testng:7.11.0")
     implementation("io.rest-assured:rest-assured:5.5.0")
     implementation("org.yaml:snakeyaml:2.3")
     implementation("ch.qos.logback:logback-classic:1.5.16")
