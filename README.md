@@ -1,7 +1,9 @@
 [![Java CI with Gradle](https://github.com/mbi88/http-request/actions/workflows/gradle.yml/badge.svg)](https://github.com/mbi88/http-request/actions/workflows/gradle.yml)
 [![codecov](https://codecov.io/gh/mbi88/http-request/branch/master/graph/badge.svg)](https://codecov.io/gh/mbi88/http-request)
 [![Latest Version](https://img.shields.io/github/v/tag/mbi88/http-request?label=version)](https://github.com/mbi88/http-request/releases)
+[![jitpack](https://jitpack.io/v/mbi88/http-request.svg)](https://jitpack.io/#mbi88/http-request)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 
 # http-request
 
