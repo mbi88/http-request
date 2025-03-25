@@ -12,11 +12,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Request builder. All fields are thread local.
+ * Thread-safe builder for HTTP requests.
  * <p>
- * ThreadLocal variables are not static in this case.
- * Is meant as a single container per instance, not container per class.
- * May create memory leak.
+ * Stores request state using ThreadLocal fields, allowing isolated usage in concurrent tests.
+ * After each request is executed, the internal state is automatically cleared via {@link #onRequest()}.
  */
 @SuppressWarnings("PMD.LinguisticNaming")
 public final class RequestBuilder implements HttpRequest, Performable {
@@ -32,6 +31,9 @@ public final class RequestBuilder implements HttpRequest, Performable {
     private final ThreadLocal<Object[]> pathParamsThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Boolean> checkNoErrorsThreadLocal = new ThreadLocal<>();
 
+    /**
+     * Sets a single header.
+     */
     @Override
     public HttpRequest setHeader(final String header, final String value) {
         final List<Header> list = Objects.isNull(getHeaders()) ? new ArrayList<>() : getHeaders();
@@ -75,7 +77,6 @@ public final class RequestBuilder implements HttpRequest, Performable {
         final List<Integer> list = new ArrayList<>();
         list.add(statusCode);
         statusCodesThreadLocal.set(list);
-
         return this;
     }
 
@@ -120,7 +121,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
     }
 
     public Boolean getDebug() {
-        return !Objects.isNull(debugThreadLocal.get()) && !debugThreadLocal.get().equals(false);
+        return Boolean.TRUE.equals(debugThreadLocal.get());
     }
 
     @Override
@@ -151,13 +152,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
     }
 
     /**
-     * Send a http request to provided url and get th rest-assured response. All request artifacts(headers, body,
-     * specification, etc) will be reset after request invocation.
-     *
-     * @param url        url to send the request to.
-     * @param method     http method.
-     * @param pathParams path parameters.
-     * @return rest-assured response.
+     * Internal request logic shared by all HTTP method implementations.
      */
     private Response doRequest(final String url, final Method method, final Object... pathParams) {
         setUrl(url);
@@ -200,7 +195,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
     }
 
     /**
-     * Resets builder after request invocation.
+     * Clears all builder state after request execution to ensure reusability in concurrent environments.
      */
     @Override
     public void onRequest() {

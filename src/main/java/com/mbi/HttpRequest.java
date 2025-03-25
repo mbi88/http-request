@@ -7,136 +7,140 @@ import io.restassured.specification.RequestSpecification;
 import java.util.List;
 
 /**
- * Performs http requests.
- * Checks response status code equals to expected.
- * Error message contains url, response and request as a curl.
- * Resets builder to default after each request.
+ * Fluent HTTP request interface for testing APIs.
+ * <p>
+ * Allows setting headers, body, authentication, and expected status codes.
+ * Supports all major HTTP methods: GET, POST, PUT, PATCH, DELETE.
+ * <p>
+ * After each request, the builder is reset automatically.
+ * If the response status or content is invalid, a detailed error message is thrown,
+ * including the request curl and response body.
  */
 @SuppressWarnings("PMD.LinguisticNaming")
 public interface HttpRequest {
 
     /**
-     * Sets a header.
+     * Adds a single header to the request.
      *
-     * @param header header name.
-     * @param value  header value.
-     * @return HttpRequest.
+     * @param header Header name.
+     * @param value  Header value.
+     * @return current HttpRequest instance.
      */
     HttpRequest setHeader(String header, String value);
 
     /**
-     * Sets headers as a list.
+     * Adds multiple headers to the request.
      *
-     * @param headers headers list.
-     * @return HttpRequest.
+     * @param headers List of Rest-Assured headers.
+     * @return current HttpRequest instance.
      */
     HttpRequest setHeaders(List<Header> headers);
 
     /**
-     * Sets request body.
+     * Sets request body (object will be serialized using Rest-Assured's default mechanism).
      *
-     * @param data data for request.
-     * @return HttpRequest.
+     * @param data body payload.
+     * @return current HttpRequest instance.
      */
     HttpRequest setData(Object data);
 
     /**
-     * Sets request token in Authentication header.
+     * Sets Bearer authentication token (sent as Authorization header).
      *
-     * @param token auth token.
-     * @return HttpRequest.
+     * @param token bearer token value.
+     * @return current HttpRequest instance.
      */
     HttpRequest setToken(String token);
 
     /**
-     * Sets expected status code in response.
+     * Sets a single expected HTTP status code.
      *
-     * @param code expected code.
-     * @return HttpRequest.
+     * @param code expected status code (e.g. 200, 201, etc.).
+     * @return current HttpRequest instance.
      */
     HttpRequest setExpectedStatusCode(Integer code);
 
     /**
-     * Sets expected status codes in response .
+     * Sets multiple expected HTTP status codes.
      *
-     * @param codes expected code.
-     * @return HttpRequest.
+     * @param codes list of acceptable status codes.
+     * @return current HttpRequest instance.
      */
     HttpRequest setExpectedStatusCodes(List<Integer> codes);
 
     /**
-     * Sets if response should contain 'errors' array.
+     * Indicates whether response should NOT contain "errors" array in body.
      *
-     * @param noErrors errors flag.
-     * @return HttpRequest.
+     * @param noErrors true to check absence of errors; false to skip check.
+     * @return current HttpRequest instance.
      */
     HttpRequest checkNoErrors(Boolean noErrors);
 
     /**
-     * Sets custom request specification.
+     * Sets a custom Rest-Assured specification.
      *
-     * @param specification request specification.
-     * @return HttpRequest.
+     * @param specification preconfigured Rest-Assured specification.
+     * @return current HttpRequest instance.
      */
     HttpRequest setRequestSpecification(RequestSpecification specification);
 
     /**
-     * Sets request url.
+     * Sets target request URL.
      *
-     * @param url request url.
-     * @return HttpRequest.
+     * @param url full endpoint URL (may contain path params).
+     * @return current HttpRequest instance.
      */
     HttpRequest setUrl(String url);
 
     /**
-     * Prints request debug info.
+     * Enables full request/response debug logging.
      *
-     * @return HttpRequest,
+     * @return current HttpRequest instance.
      */
     HttpRequest debug();
 
     /**
-     * Performs post request.
+     * Executes a POST request to the specified URL.
      *
-     * @param url        request url.
-     * @param pathParams path parameters.
-     * @return response.
+     * @param url        endpoint URL.
+     * @param pathParams optional path parameters.
+     * @return Rest-Assured response object.
      */
     Response post(String url, Object... pathParams);
 
     /**
-     * Performs get request.
+     * Executes a GET request to the specified URL.
      *
-     * @param url        request url.
-     * @param pathParams path parameters.
-     * @return response.
+     * @param url        endpoint URL.
+     * @param pathParams optional path parameters.
+     * @return Rest-Assured response object.
      */
     Response get(String url, Object... pathParams);
 
     /**
-     * Performs put request.
+     * Executes a PUT request to the specified URL.
      *
-     * @param url        request url.
-     * @param pathParams path parameters.
-     * @return response.
+     * @param url        endpoint URL.
+     * @param pathParams optional path parameters.
+     * @return Rest-Assured response object.
      */
     Response put(String url, Object... pathParams);
 
     /**
-     * Performs patch request.
+     * Executes a PATCH request to the specified URL.
      *
-     * @param url        request url.
-     * @param pathParams path parameters.
-     * @return response.
+     * @param url        endpoint URL.
+     * @param pathParams optional path parameters.
+     * @return Rest-Assured response object.
      */
     Response patch(String url, Object... pathParams);
 
     /**
-     * Performs delete request.
+     * Executes a DELETE request to the specified URL.
      *
-     * @param url        request url.
-     * @param pathParams path parameters.
-     * @return response.
+     * @param url        endpoint URL.
+     * @param pathParams optional path parameters.
+     * @return Rest-Assured response object.
      */
     Response delete(String url, Object... pathParams);
 }

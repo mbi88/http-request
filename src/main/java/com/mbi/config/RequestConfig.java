@@ -8,19 +8,59 @@ import io.restassured.specification.RequestSpecification;
 import java.util.List;
 
 /**
- * Request configuration.
+ * Holds all configuration details for an HTTP request.
+ * This class is used to build, track, and debug requests.
  */
 public class RequestConfig {
 
+    /**
+     * HTTP method to use (GET, POST, etc.).
+     */
     private Method method;
+
+    /**
+     * Target request URL.
+     */
     private String url;
+
+    /**
+     * Body payload.
+     */
     private Object data;
+
+    /**
+     * Rest-Assured request specification (transient: not serialized).
+     */
     private transient RequestSpecification requestSpecification;
+
+    /**
+     * List of headers to include in the request.
+     */
     private List<Header> headers;
+
+    /**
+     * List of acceptable response status codes.
+     */
     private List<Integer> expectedStatusCodes;
+
+    /**
+     * Optional path parameters.
+     */
     private Object[] pathParams;
+
+    /**
+     * Max characters of response body to include in error logs (0 = unlimited).
+     */
     private int maxResponseLength;
+
+    /**
+     * Enables full debug logging of request/response.
+     */
     private boolean debug;
+
+    /**
+     * If true, response must NOT contain 'errors' array.
+     */
     private Boolean checkNoErrors;
 
     public Method getMethod() {
@@ -71,8 +111,11 @@ public class RequestConfig {
         this.expectedStatusCodes = expectedStatusCodes;
     }
 
+    /**
+     * Returns a clone of the path parameters array (to avoid accidental mutation).
+     */
     public Object[] getPathParams() {
-        return pathParams.clone();
+        return pathParams != null ? pathParams.clone() : new Object[0];
     }
 
     public void setPathParams(final Object... pathParams) {
@@ -103,6 +146,11 @@ public class RequestConfig {
         this.checkNoErrors = checkNoErrors;
     }
 
+    /**
+     * Converts current configuration to JSON string using Gson.
+     *
+     * @return JSON-formatted string.
+     */
     @Override
     public String toString() {
         return new Gson().toJson(this);

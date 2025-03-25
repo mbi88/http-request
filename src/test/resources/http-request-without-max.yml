@@ -1,0 +1,3 @@
+connectionTimeout: 1234
+headers:
+  X-Test: test

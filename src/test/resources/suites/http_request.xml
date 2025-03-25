@@ -4,6 +4,7 @@
     <test name="Http request tests">
         <classes>
             <class name="HttpRequestTest"/>
+            <class name="com.mbi.request.RequestDirectorTest"/>
         </classes>
     </test>
 </suite>

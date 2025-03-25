@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertFalse;
 
 /**
- * Performs request.
+ * Executes the actual HTTP request using a configured RequestSpecification.
+ * <p>
+ * Performs status code validation and optional 'errors' array check.
+ * Notifies any attached listeners after execution.
  */
 final class HttpRequestPerformer implements Performable {
 
@@ -23,76 +25,20 @@ final class HttpRequestPerformer implements Performable {
     private RequestConfig config;
 
     /**
-     * Checks equality of actual response status code and expected status code if it was set.
-     *
-     * @param response response of a request.
-     * @param config   request configuration.
-     * @throws AssertionError if actual response status code is not equal to expected.
-     */
-    private void checkStatusCode(final Response response, final RequestConfig config) {
-        // No need to check status code if it's not set
-        if (Objects.isNull(config.getExpectedStatusCodes())) {
-            return;
-        }
-
-        try {
-            if (!config.getExpectedStatusCodes().contains(response.statusCode())) {
-                assertEquals(String.valueOf(response.statusCode()), config.getExpectedStatusCodes().toString());
-            }
-        } catch (AssertionError assertionError) {
-            final String msg = new MessageComposer(assertionError, config, response).composeMessage();
-            throw new AssertionError(msg, assertionError);
-        }
-    }
-
-    /**
-     * Check if response has 'errors' array.
-     *
-     * @param response response of a request.
-     * @param config   request configuration.
-     * @throws AssertionError if actual response has 'errors' array.
-     */
-    private void checkNoErrors(final Response response, final RequestConfig config) {
-        // No need to check errors code if flag not set
-        if (Objects.isNull(config.isCheckNoErrors()) || !config.isCheckNoErrors()) {
-            return;
-        }
-
-        final var errors = response.body().jsonPath().getList("errors");
-        // Check if list has errors
-        final Predicate<List<Object>> checkListHasErrors = list -> {
-            var listHasErrors = false;
-            for (var o : list) {
-                if (!Objects.isNull(o)) {
-                    listHasErrors = true;
-                    break;
-                }
-            }
-            return listHasErrors;
-        };
-        final boolean hasErrors = errors != null && checkListHasErrors.test(errors);
-
-        try {
-            assertFalse(hasErrors, "Response has errors!");
-        } catch (AssertionError assertionError) {
-            final String msg = new MessageComposer(assertionError, config, response).composeMessage();
-            throw new AssertionError(msg, assertionError);
-        }
-    }
-
-    /**
-     * Performs request. Compares status code with expected. Finally resets request builder to default.
+     * Executes the request and performs validations.
      *
      * @param requestConfig request configuration.
-     * @return response.
-     * @throws AssertionError on errors. Exception message contains url, response and request as a curl.
+     * @return Rest-Assured response object.
+     * @throws AssertionError if status code doesn't match or errors are present.
      */
     public Response request(final RequestConfig requestConfig) {
         try {
             this.config = requestConfig;
+
             this.response = requestConfig
                     .getRequestSpecification()
                     .request(requestConfig.getMethod(), requestConfig.getUrl(), requestConfig.getPathParams());
+
             checkStatusCode(response, requestConfig);
             checkNoErrors(response, requestConfig);
         } finally {
@@ -103,19 +49,92 @@ final class HttpRequestPerformer implements Performable {
     }
 
     /**
-     * Listens to request invocation.
+     * Registers a request listener to be called after execution.
      *
-     * @param requestListener listener.
+     * @param requestListener listener implementation.
      */
     public void addRequestListener(final OnRequestPerformedListener requestListener) {
         this.requestListeners.add(requestListener);
     }
 
+    /**
+     * Called after request execution to log request/response using SLF4J.
+     */
     @Override
     public void onRequest() {
         final Logger logger = LoggerFactory.getLogger("file-logger");
         logger.info(String.format("Request: %s%nResponse: %s%n",
                 config.toString(),
                 Objects.isNull(response) ? "null" : response.asString()));
+    }
+
+    /**
+     * Validates the response status code against expected values from config.
+     *
+     * @param response actual response.
+     * @param config   request configuration.
+     */
+    private void checkStatusCode(final Response response, final RequestConfig config) {
+        // No need to check status code if it's not set
+        if (config.getExpectedStatusCodes() == null) {
+            return;
+        }
+
+        // If the list of expected status codes doesn't contain the actual status code,
+        // we explicitly fail the test with a comparison message.
+        // Note: we convert both values to strings to improve the readability of the error message.
+        if (!config.getExpectedStatusCodes().contains(response.statusCode())) {
+            final var assertionError = new AssertionError(String.format("expected %s but found [%d]",
+                    config.getExpectedStatusCodes(), response.statusCode()));
+            final String msg = new MessageComposer(assertionError, config, response).composeMessage();
+            throw new AssertionError(msg, assertionError);
+        }
+    }
+
+    /**
+     * Validates that the response body does not contain an 'errors' array (if enabled).
+     *
+     * @param response actual response.
+     * @param config   request configuration.
+     */
+    private void checkNoErrors(final Response response, final RequestConfig config) {
+        // No need to check errors code if flag not set
+        if (config.isCheckNoErrors() == null || !config.isCheckNoErrors()) {
+            return;
+        }
+
+        // Check if list has errors
+        final var errors = response.body().jsonPath().getList("errors");
+        final boolean hasErrors = responseHasErrors(errors);
+
+        try {
+            assertFalse(hasErrors, "Response has errors!");
+        } catch (AssertionError assertionError) {
+            final String msg = new MessageComposer(assertionError, config, response).composeMessage();
+            throw new AssertionError(msg, assertionError);
+        }
+    }
+
+    /**
+     * Checks whether the given list of errors contains any non-null elements.
+     * <p>
+     * This is used to detect if the response body has an 'errors' array with actual errors.
+     *
+     * @param errors list of error objects parsed from JSON response.
+     * @return true if any non-null error is present; false otherwise.
+     */
+    private boolean responseHasErrors(final List<Object> errors) {
+        boolean hasErrors = false;
+
+        if (errors != null) {
+            for (var error : errors) {
+                if (error != null) {
+                    hasErrors = true;
+                    break;
+                }
+            }
+        }
+
+        return hasErrors;
     }
 }
