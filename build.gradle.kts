@@ -20,7 +20,7 @@ repositories {
 dependencies {
     implementation("org.testng:testng:7.11.0")
     implementation("io.rest-assured:rest-assured:5.5.6")
-    implementation("org.yaml:snakeyaml:2.4")
+    implementation("org.yaml:snakeyaml:2.5")
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("com.google.code.gson:gson:2.13.1")
 }
