@@ -1,14 +1,41 @@
 package com.mbi.request;
 
 import com.mbi.config.RequestDirector;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import io.restassured.http.Method;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 import static org.testng.Assert.*;
 
 public class RequestDirectorTest {
+
+    private static String baseUrl;
+    private HttpServer server;
+
+    @BeforeClass
+    public void startServer() throws IOException {
+        server = HttpServer.create(new InetSocketAddress(0), 0); // automatically assign a free port
+        server.createContext("/with-errors", new JsonHandler());
+        server.setExecutor(null);
+        server.start();
+
+        int port = server.getAddress().getPort();
+        baseUrl = "http://localhost:" + port;
+    }
+
+    @AfterClass
+    public void stopServer() {
+        server.stop(0);
+    }
 
     @Test
     public void testReturnsEmptyYamlIfFileMissing() throws Exception {
@@ -33,7 +60,7 @@ public class RequestDirectorTest {
     @Test
     public void testHeadersNull() {
         var builder = new RequestBuilder();
-        builder.setExpectedStatusCode(400).setUrl("https://api.npoint.io/1e9bfb4122b88f8f3582");
+        builder.setExpectedStatusCode(400).setUrl(baseUrl + "/with-errors");
 
         var director = new RequestDirector(builder);
 
@@ -54,7 +81,7 @@ public class RequestDirectorTest {
     @Test
     public void testHeadersEmpty() {
         var builder = new RequestBuilder();
-        builder.setExpectedStatusCode(400).setUrl("https://api.npoint.io/1e9bfb4122b88f8f3582");
+        builder.setExpectedStatusCode(400).setUrl(baseUrl + "/with-errors");
 
         var director = new RequestDirector(builder);
 
@@ -147,7 +174,7 @@ public class RequestDirectorTest {
         var builder = new RequestBuilder();
         builder
                 .setExpectedStatusCode(400)
-                .setUrl("https://api.npoint.io/1e9bfb4122b88f8f3582");
+                .setUrl(baseUrl + "/with-errors");
 
         var director = new RequestDirector(builder) {
             @Override
@@ -195,6 +222,33 @@ public class RequestDirectorTest {
             fail("Expected exception due to invalid URL");
         } catch (Exception e) {
             // ok
+        }
+    }
+
+    static class JsonHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String path = exchange.getHttpContext().getPath();
+            String response;
+            int status;
+
+            switch (path) {
+                case "/with-errors" -> {
+                    response = "{\"data\":{\"a\":1},\"errors\":[{\"message\":\"error\"}]}";
+                    status = 200;
+                }
+                default -> {
+                    response = "{\"error\":\"Unknown path\"}";
+                    status = 404;
+                }
+            }
+
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(status, response.getBytes().length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
         }
     }
 }

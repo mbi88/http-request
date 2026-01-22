@@ -92,7 +92,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
         return this;
     }
 
-    public Boolean getNoErrors() {
+    public Boolean hasNoErrors() {
         return checkNoErrorsThreadLocal.get();
     }
 
@@ -120,7 +120,7 @@ public final class RequestBuilder implements HttpRequest, Performable {
         return urlThreadLocal.get();
     }
 
-    public Boolean getDebug() {
+    public Boolean isDebug() {
         return Boolean.TRUE.equals(debugThreadLocal.get());
     }
 

@@ -1,6 +1,8 @@
 package com.mbi.config;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import io.restassured.http.Header;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
@@ -22,6 +24,11 @@ public class RequestConfig {
      * Target request URL.
      */
     private String url;
+
+    /**
+     * Name of the test method that initiated the request (for logging).
+     */
+    private String callerTestMethod;
 
     /**
      * Body payload.
@@ -146,13 +153,40 @@ public class RequestConfig {
         this.checkNoErrors = checkNoErrors;
     }
 
+    public String getCallerTestMethod() {
+        return callerTestMethod;
+    }
+
+    public void setCallerTestMethod(final String callerTestMethod) {
+        this.callerTestMethod = callerTestMethod;
+    }
+
     /**
-     * Converts current configuration to JSON string using Gson.
+     * Converts current configuration to JSON string.
      *
      * @return JSON-formatted string.
      */
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        final var gson = new GsonBuilder()
+                .disableHtmlEscaping() // optional: do not escape characters like <, >, &
+                .create();
+
+        // First, convert this to a JsonObject ("data" is still a String here)
+        // Then, replace the "data" field, if present, with parsed JSON
+        final var root = gson.toJsonTree(this).getAsJsonObject();
+
+        if (data != null) {
+            try {
+                // Try to parse "data" as JSON
+                final var parsed = JsonParser.parseString(data.toString());
+                // Replace the "data" field with the parsed JSON element
+                root.add("data", parsed);
+            } catch (JsonSyntaxException ignored) {
+                // If parsing fails, keep "data" as a string
+            }
+        }
+
+        return gson.toJson(root);
     }
 }

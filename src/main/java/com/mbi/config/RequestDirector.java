@@ -4,7 +4,6 @@ import com.mbi.request.RequestBuilder;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
-import io.restassured.http.Header;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.RequestSpecification;
 import org.yaml.snakeyaml.Yaml;
@@ -21,8 +20,8 @@ import static io.restassured.RestAssured.given;
 public class RequestDirector {
 
     private final RequestBuilder requestBuilder;
-    private final YamlConfiguration yamlConfiguration;
     private final RequestConfig requestConfig = new RequestConfig();
+    private YamlConfiguration yamlConfiguration;
 
     /**
      * Constructs a director with a builder.
@@ -31,7 +30,6 @@ public class RequestDirector {
      */
     public RequestDirector(final RequestBuilder requestBuilder) {
         this.requestBuilder = requestBuilder;
-        this.yamlConfiguration = readYamlConfiguration();
     }
 
     /**
@@ -47,6 +45,9 @@ public class RequestDirector {
      * Assembles and fills all request config fields based on builder and YAML.
      */
     public void constructRequest() {
+        // Load YAML configuration to avoid calling an overridable method during object construction
+        this.yamlConfiguration = readYamlConfiguration();
+
         final RequestSpecification spec = configureRequest();
 
         requestConfig.setRequestSpecification(spec);
@@ -56,16 +57,18 @@ public class RequestDirector {
         requestConfig.setHeaders(new ArrayList<>(((FilterableRequestSpecification) spec).getHeaders().asList()));
         requestConfig.setExpectedStatusCodes(requestBuilder.getStatusCodes());
         requestConfig.setPathParams(requestBuilder.getPathParams());
-        requestConfig.setDebug(requestBuilder.getDebug());
+        requestConfig.setDebug(requestBuilder.isDebug());
         requestConfig.setMaxResponseLength(getMaxResponseLength());
-        requestConfig.setCheckNoErrors(requestBuilder.getNoErrors());
+        requestConfig.setCheckNoErrors(requestBuilder.hasNoErrors());
     }
 
     /**
      * Reads configuration from 'http-request.yml' if present. Returns empty defaults if not found.
      */
     private YamlConfiguration readYamlConfiguration() {
-        final InputStream in = getClass().getClassLoader().getResourceAsStream(yamlFileName());
+        final InputStream in = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream(yamlFileName());
         if (Objects.isNull(in)) {
             return new YamlConfiguration();
         }
@@ -107,15 +110,35 @@ public class RequestDirector {
     }
 
     /**
-     * Applies connection timeout from YAML config (if set).
+     * Applies request timeouts.
+     * <p>
+     * Always sets safe defaults to prevent infinite hangs.
+     * If YAML defines connectionTimeout, it overrides connect + socket timeouts.
      */
     private void setRequestTimeout(final RequestSpecification spec) {
-        if (yamlConfiguration.getConnectionTimeout() != null) {
-            final RestAssuredConfig config = RestAssured.config().httpClient(HttpClientConfig.httpClientConfig()
-                    .setParam("http.connection.timeout", yamlConfiguration.getConnectionTimeout())
-                    .setParam("http.socket.timeout", yamlConfiguration.getConnectionTimeout()));
-            spec.config(config);
-        }
+        // Safe defaults (ms)
+        final int defaultConnectTimeoutMs = 10_000;
+        final int defaultSocketTimeoutMs = 60_000;
+        final int defaultPoolTimeoutMs = 10_000;
+
+        // YAML override (if present). Current YAML model has only one value,
+        // so we apply it to connect + socket.
+        final Integer yamlTimeout = yamlConfiguration.getConnectionTimeout();
+        final int connectTimeoutMs = (yamlTimeout != null) ? yamlTimeout : defaultConnectTimeoutMs;
+        final int socketTimeoutMs = (yamlTimeout != null) ? yamlTimeout : defaultSocketTimeoutMs;
+        final  int poolTimeoutMs = (yamlTimeout != null) ? yamlTimeout : defaultPoolTimeoutMs;
+
+        final RestAssuredConfig config = RestAssured.config().httpClient(
+                HttpClientConfig.httpClientConfig()
+                        // Connect timeout
+                        .setParam("http.connection.timeout", connectTimeoutMs)
+                        // Read/socket timeout (prevents hanging on response read forever)
+                        .setParam("http.socket.timeout", socketTimeoutMs)
+                        // Wait timeout when connection pool is exhausted (important for parallel runs)
+                        .setParam("http.connection-manager.timeout", poolTimeoutMs)
+        );
+
+        spec.config(config);
     }
 
     /**
@@ -150,7 +173,7 @@ public class RequestDirector {
      */
     private void appendHeaders(final RequestSpecification spec) {
         if (requestBuilder.getHeaders() != null) {
-            for (Header header : requestBuilder.getHeaders()) {
+            for (final var header : requestBuilder.getHeaders()) {
                 spec.header(header);
             }
         }
@@ -160,7 +183,7 @@ public class RequestDirector {
      * Enables debug logging if requested.
      */
     private void setDebug(final RequestSpecification spec) {
-        if (requestBuilder.getDebug()) {
+        if (requestBuilder.isDebug()) {
             spec.log().everything();
         }
     }

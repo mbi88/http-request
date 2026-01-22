@@ -1,6 +1,7 @@
 package com.mbi.request;
 
 import com.mbi.config.RequestConfig;
+import com.mbi.utils.CallerResolver;
 import com.mbi.utils.MessageComposer;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
@@ -63,9 +64,15 @@ final class HttpRequestPerformer implements Performable {
     @Override
     public void onRequest() {
         final Logger logger = LoggerFactory.getLogger("file-logger");
-        logger.info(String.format("Request: %s%nResponse: %s%n",
+
+        // Add caller method name for better traceability
+        config.setCallerTestMethod(CallerResolver.getTestEntryPoint());
+
+        logger.info(
+                "Request: {}\nResponse: {}\n",
                 config.toString(),
-                Objects.isNull(response) ? "null" : response.asString()));
+                Objects.isNull(response) ? "null" : response.asString()
+        );
     }
 
     /**
@@ -127,7 +134,7 @@ final class HttpRequestPerformer implements Performable {
         boolean hasErrors = false;
 
         if (errors != null) {
-            for (var error : errors) {
+            for (final var error : errors) {
                 if (error != null) {
                     hasErrors = true;
                     break;

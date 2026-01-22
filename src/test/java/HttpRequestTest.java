@@ -1,9 +1,20 @@
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mbi.HttpRequest;
 import com.mbi.config.RequestDirector;
 import com.mbi.request.RequestBuilder;
+import com.mbi.utils.CallerResolver;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import io.restassured.http.Header;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +23,39 @@ import static org.testng.Assert.*;
 
 public class HttpRequestTest {
 
+    private static String baseUrl;
     private final HttpRequest http = new RequestBuilder();
+    private HttpServer server;
+
+    @BeforeClass
+    public void startServer() throws IOException {
+        server = HttpServer.create(new InetSocketAddress(0), 0); // automatically assign a free port
+        server.createContext("/success", new JsonHandler());
+        server.createContext("/with-errors", new JsonHandler());
+        server.createContext("/errors-null", new JsonHandler());
+        server.createContext("/errors-in-array", new JsonHandler());
+        server.createContext("/one-of-errors-null", new JsonHandler());
+        server.createContext("/empty-errors", new JsonHandler());
+        server.createContext("/graphql", new JsonHandler());
+        server.setExecutor(null);
+        server.start();
+
+        int port = server.getAddress().getPort();
+        baseUrl = "http://localhost:" + port;
+    }
+
+    @AfterClass
+    public void stopServer() {
+        server.stop(0);
+    }
 
     @Test
     public void testSetToken() {
         var ex = expectThrows(AssertionError.class, () -> http
                 .setToken("token")
                 .setExpectedStatusCode(4534)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().contains("-H 'Authorization: token"));
+                .get(baseUrl + "/success"));
+        assertTrue(ex.getMessage().contains("--header 'Authorization: token"));
     }
 
     @Test
@@ -31,15 +66,15 @@ public class HttpRequestTest {
                 .setRequestSpecification(spec)
                 .setExpectedStatusCode(24)
                 .setToken("token2")
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().contains("-H 'Authorization: token2"));
+                .get(baseUrl + "/success"));
+        assertTrue(ex.getMessage().contains("--header 'Authorization: token2"));
     }
 
     @Test
     public void testWithoutToken() {
         var ex = expectThrows(AssertionError.class, () -> http
                 .setExpectedStatusCode(356)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
+                .get(baseUrl + "/success"));
         assertFalse(ex.getMessage().contains("-H 'Authorization:"));
     }
 
@@ -50,8 +85,8 @@ public class HttpRequestTest {
         var ex = expectThrows(AssertionError.class, () -> http
                 .setExpectedStatusCode(463)
                 .setRequestSpecification(spec)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().contains("-H 'Authorization: token1"));
+                .get(baseUrl + "/success"));
+        assertTrue(ex.getMessage().contains("--header 'Authorization: token1"));
     }
 
     @Test
@@ -62,8 +97,13 @@ public class HttpRequestTest {
                 .setRequestSpecification(spec)
                 .setExpectedStatusCode(234)
                 .setData(2)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().endsWith("--data '2'\n\n"));
+                .get(baseUrl + "/success"));
+
+        assertTrue(ex.getMessage().endsWith("""
+                --data '
+                    2'
+                
+                """));
     }
 
     @Test
@@ -81,17 +121,17 @@ public class HttpRequestTest {
                 .setHeader("h2", "h2_value")
                 .setToken("token")
                 .setHeader("Cookie", "cookie")
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
+                .get(baseUrl + "/success"));
 
-        assertTrue(ex.getMessage().contains("--data '100'"), "Incorrect --data");
-        assertTrue(ex.getMessage().contains("-H 'spec_header: spec_header_value' -H 'h1: h1_spec' -H 'Authorization: token' -H 'h1: h1_value' -H 'h2: h2_value' -H 'Cookie: cookie'"), "Incorrect headers");
+        assertTrue(ex.getMessage().contains("--data '\n    100'"), "Incorrect --data");
+        assertTrue(ex.getMessage().contains("--header 'spec_header: spec_header_value' \\\n  --header 'h1: h1_spec' \\\n  --header 'Authorization: token' \\\n  --header 'h1: h1_value' \\\n  --header 'h2: h2_value' \\\n  --header 'Cookie: cookie'"), "Incorrect headers");
     }
 
     @Test
     public void testCheckErrorsIfErrorsExist() {
         var ex = expectThrows(AssertionError.class, () -> http
                 .checkNoErrors(true)
-                .get("https://api.npoint.io/1e9bfb4122b88f8f3582"));
+                .get(baseUrl + "/with-errors"));
         assertTrue(ex.getMessage().startsWith("Response has errors!"));
     }
 
@@ -99,21 +139,21 @@ public class HttpRequestTest {
     public void testCheckErrorsIfErrorsExistAndFlagFalse() {
         http
                 .checkNoErrors(false)
-                .get("https://api.npoint.io/1e9bfb4122b88f8f3582");
+                .get(baseUrl + "/with-errors");
     }
 
     @Test
     public void testCheckErrorsIfEmptyErrors() {
         http
                 .checkNoErrors(true)
-                .get("https://api.npoint.io/b200b3d9aae0c8ebdcaa");
+                .get(baseUrl + "/empty-errors");
     }
 
     @Test
     public void testCheckErrorsIfOneErrorNull() {
         var ex = expectThrows(AssertionError.class, () -> http
                 .checkNoErrors(true)
-                .get("https://api.npoint.io/f651b826630ca37714cb"));
+                .get(baseUrl + "/one-of-errors-null"));
         assertTrue(ex.getMessage().startsWith("Response has errors!"));
     }
 
@@ -121,14 +161,14 @@ public class HttpRequestTest {
     public void testCheckErrorsIfErrorsNull() {
         http
                 .checkNoErrors(true)
-                .get("https://api.npoint.io/44d894f7413df3d8b9df");
+                .get(baseUrl + "/errors-null");
     }
 
     @Test
     public void testCheckErrorsIfHasErrorsInArrayResponse() {
         var ex = expectThrows(AssertionError.class, () -> http
                 .checkNoErrors(true)
-                .get("https://api.npoint.io/2a74a26ec8871bed9caf"));
+                .get(baseUrl + "/errors-in-array"));
         assertTrue(ex.getMessage().startsWith("Response has errors!"));
     }
 
@@ -136,7 +176,7 @@ public class HttpRequestTest {
     public void testCodeFail() {
         var ex = expectThrows(AssertionError.class, () -> http
                 .setExpectedStatusCode(403)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
+                .get(baseUrl + "/success"));
         assertTrue(ex.getMessage().contains("expected [403] but found [200]"));
     }
 
@@ -144,15 +184,15 @@ public class HttpRequestTest {
     public void testStatusCodeIsAcceptedWhenInList() {
         http
                 .setExpectedStatusCodes(List.of(200, 404))
-                .get("https://api.npoint.io/3a360af4f1419f85f238");
+                .get(baseUrl + "/success");
     }
 
     @Test
     public void testAssertionThrownIfStatusCodeNotInList() {
         var builder = new RequestBuilder()
-                .setUrl("https://api.npoint.io/3a360af4f1419f85f238")
+                .setUrl(baseUrl + "/success")
                 .setExpectedStatusCodes(List.of(404, 500));
-        var ex = expectThrows(AssertionError.class, () -> builder.get("https://api.npoint.io/3a360af4f1419f85f238"));
+        var ex = expectThrows(AssertionError.class, () -> builder.get(baseUrl + "/success"));
         assertTrue(ex.getMessage().contains("expected [404, 500] but found [200]"));
     }
 
@@ -160,7 +200,7 @@ public class HttpRequestTest {
     public void testCodesFail() {
         var ex = expectThrows(AssertionError.class, () -> http
                 .setExpectedStatusCodes(List.of(404, 403, 405))
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
+                .get(baseUrl + "/success"));
         assertTrue(ex.getMessage().contains("expected [404, 403, 405] but found [200]"));
     }
 
@@ -169,8 +209,13 @@ public class HttpRequestTest {
         var ex = expectThrows(AssertionError.class, () -> http
                 .setExpectedStatusCode(342)
                 .setData(1)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().endsWith("--data '1'\n\n"));
+                .get(baseUrl + "/success"));
+
+        assertTrue(ex.getMessage().endsWith("""
+                --data '
+                    1'
+                
+                """));
     }
 
     @Test
@@ -181,8 +226,8 @@ public class HttpRequestTest {
                 .setToken("wer")
                 .setRequestSpecification(spec)
                 .setExpectedStatusCode(342)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().contains("-H 'h1: v' -H 'Authorization: wer'"));
+                .get(baseUrl + "/success"));
+        assertTrue(ex.getMessage().contains("--header 'h1: v' \\\n  --header 'Authorization: wer'"));
     }
 
     @Test
@@ -194,8 +239,8 @@ public class HttpRequestTest {
         var ex = expectThrows(AssertionError.class, () -> http
                 .setHeaders(headers)
                 .setExpectedStatusCode(300)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().contains("-H 'h1: v' -H 'h2: v'"));
+                .get(baseUrl + "/success"));
+        assertTrue(ex.getMessage().contains("--header 'h1: v' \\\n  --header 'h2: v'"));
     }
 
     @Test
@@ -204,8 +249,8 @@ public class HttpRequestTest {
                 .setHeader("header1", "v")
                 .setHeader("header2", "v")
                 .setExpectedStatusCode(300)
-                .get("https://api.npoint.io/3a360af4f1419f85f238"));
-        assertTrue(ex.getMessage().contains("-H 'header1: v' -H 'header2: v'"));
+                .get(baseUrl + "/success"));
+        assertTrue(ex.getMessage().contains("--header 'header1: v' \\\n  --header 'header2: v'"));
     }
 
     @Test
@@ -231,31 +276,210 @@ public class HttpRequestTest {
         var director = new RequestDirector(builder);
         director.constructRequest();
 
-        assertTrue(builder.getDebug());
+        assertTrue(builder.isDebug());
         assertTrue(director.getRequestConfig().isDebug());
     }
 
     @Test
     public void testPost() {
         http
-                .post("https://api.npoint.io/44d894f7413df3d8b9df");
+                .post(baseUrl + "/errors-null");
     }
 
     @Test
     public void testDelete() {
         http
-                .delete("https://api.npoint.io/44d894f7413df3d8b9df");
+                .delete(baseUrl + "/errors-null");
     }
 
     @Test
     public void testPatch() {
         http
-                .patch("https://api.npoint.io/44d894f7413df3d8b9df");
+                .patch(baseUrl + "/errors-null");
     }
 
     @Test
     public void testPut() {
         http
-                .put("https://api.npoint.io/44d894f7413df3d8b9df");
+                .put(baseUrl + "/errors-null");
+    }
+
+    @Test
+    public void testCanPerformGraphQLRequest() {
+        var r = http
+                .setData("""
+                        {"variables":{"accountId":123},"query":"query($accountId: Int!, $agencyAccountId: Int) {    channels(accountId: $accountId, agencyAccountId: $agencyAccountId) {        nodes {            accountId            id            name            updatedAt        }    }}"}""")
+                .setExpectedStatusCode(200)
+                .setToken("Bearer token")
+                .checkNoErrors(true)
+                .post(baseUrl + "/graphql");
+
+        assertEquals(r.asString(), "{\"data\":{\"graphql\":true},\"errors\":[]}");
+    }
+
+    @Test
+    public void testCurlIfDataParserThrowsException() {
+        var ex = expectThrows(AssertionError.class, () -> http
+                .setData("{{ invalid json }}")
+                .setExpectedStatusCode(2020)
+                .setToken("Bearer token")
+                .checkNoErrors(true)
+                .post(baseUrl + "/graphql"));
+
+        assertTrue(ex.getMessage().contains("""
+                --data '
+                    {{ invalid json }}'"""
+        ));
+    }
+
+    @Test
+    public void testCanRequestWithJsonObjectPayload() {
+        var obj = new JsonObject();
+        obj.addProperty("a", 1);
+
+        var ex = expectThrows(AssertionError.class, () -> http
+                .setData(obj)
+                .setExpectedStatusCode(2002)
+                .setToken("Bearer token")
+                .checkNoErrors(true)
+                .post(baseUrl + "/graphql"));
+
+        assertTrue(ex.getMessage().contains("""
+                --data '
+                    {
+                      "a": 1
+                    }'"""
+        ));
+    }
+
+    @Test
+    public void testCanRequestWithJsonArrayPayload() {
+        var obj1 = new JsonObject();
+        obj1.addProperty("a", 1);
+        var obj2 = new JsonObject();
+        obj2.addProperty("a", 2);
+        var array = new JsonArray();
+        array.add(obj1);
+        array.add(obj2);
+
+        var ex = expectThrows(AssertionError.class, () -> http
+                .setData(array)
+                .setExpectedStatusCode(2002)
+                .setToken("Bearer token")
+                .checkNoErrors(true)
+                .post(baseUrl + "/graphql"));
+
+        assertTrue(ex.getMessage().contains("""
+                --data '
+                    [
+                      {
+                        "a": 1
+                      },
+                      {
+                        "a": 2
+                      }
+                    ]'"""
+        ));
+    }
+
+    @Test
+    public void testCanGetCallerMethodName() {
+        var builder = new RequestBuilder();
+        builder.setUrl(baseUrl + "/success");
+
+        var director = new RequestDirector(builder);
+        director.constructRequest();
+        var config = director.getRequestConfig();
+        config.setCallerTestMethod(CallerResolver.getTestEntryPoint());
+
+        assertEquals(config.getCallerTestMethod(), "HttpRequestTest.testCanGetCallerMethodName");
+    }
+
+    @Test
+    public void testFailedGetRequestHasCurlWithoutSlashInTheEnd() {
+        var spec = given().header(new Header("Authorization", "token1"));
+
+        var ex = expectThrows(AssertionError.class, () -> http
+                .setRequestSpecification(spec)
+                .setExpectedStatusCode(24)
+                .setToken("token2")
+                .get(baseUrl + "/success"));
+
+        assertTrue(ex.getMessage().endsWith("--header 'Authorization: token2'\n\n"));
+    }
+
+    @Test
+    public void testFailedPostRequestHasCurlWithDataInTheEnd() {
+        var spec = given().header(new Header("Authorization", "token1"));
+
+        var ex = expectThrows(AssertionError.class, () -> http
+                .setRequestSpecification(spec)
+                .setData("""
+                        {"variables":{"accountId":123},"query":"query($accountId: Int!, $agencyAccountId: Int) {    channels(accountId: $accountId, agencyAccountId: $agencyAccountId) {        nodes {            accountId            id            name            updatedAt        }    }}"}""")
+                .setExpectedStatusCode(24)
+                .setToken("token2")
+                .post(baseUrl + "/success"));
+
+        assertTrue(ex.getMessage().endsWith("""
+                --data '
+                    {
+                      "variables": {
+                        "accountId": 123
+                      },
+                      "query": "query($accountId: Int!, $agencyAccountId: Int) {    channels(accountId: $accountId, agencyAccountId: $agencyAccountId) {        nodes {            accountId            id            name            updatedAt        }    }}"
+                    }'
+                
+                """));
+    }
+
+    static class JsonHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String path = exchange.getHttpContext().getPath();
+            String response;
+            int status;
+
+            switch (path) {
+                case "/success" -> {
+                    response = "{\"a\":1}";
+                    status = 200;
+                }
+                case "/with-errors" -> {
+                    response = "{\"data\":{\"a\":1},\"errors\":[{\"message\":\"error\"}]}";
+                    status = 200;
+                }
+                case "/errors-null" -> {
+                    response = "{\"errors\":null,\"next_steps\":true}";
+                    status = 200;
+                }
+                case "/errors-in-array" -> {
+                    response = "[{\"data\":{\"a\":1},\"errors\":[{\"message\":\"error\"}]},{\"data\":{\"a\":1}}]";
+                    status = 200;
+                }
+                case "/one-of-errors-null" -> {
+                    response = "{\"errors\":[null,\"Sign up to make bins only you can edit\"]}";
+                    status = 200;
+                }
+                case "/empty-errors" -> {
+                    response = "{\"data\":{\"a\":1},\"errors\":[]}";
+                    status = 200;
+                }
+                case "/graphql" -> {
+                    response = "{\"data\":{\"graphql\":true},\"errors\":[]}";
+                    status = 200;
+                }
+                default -> {
+                    response = "{\"error\":\"Unknown path\"}";
+                    status = 404;
+                }
+            }
+
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(status, response.getBytes().length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        }
     }
 }
